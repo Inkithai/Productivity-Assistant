@@ -18,6 +18,10 @@ async function register(req, res) {
   });
 }
 
+async function me(req, res) {
+  return res.json({ user: req.user.toJSON() });
+}
+
 async function login(req, res) {
   const { email, password } = req.body;
 
