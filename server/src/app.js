@@ -1,9 +1,12 @@
+const cors = require('cors');
 const express = require('express');
 
+const config = require('./config/env');
 const authRoutes = require('./routes/auth.routes');
 
 const app = express();
 
+app.use(cors({ origin: config.clientOrigin }));
 app.use(express.json());
 
 app.get('/health', (req, res) => {
