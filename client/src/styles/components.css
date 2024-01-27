@@ -68,3 +68,43 @@
 .muted {
   color: #6b7787;
 }
+
+.auth-card label {
+  display: block;
+  margin-bottom: 14px;
+  font-size: 0.9rem;
+}
+
+.auth-card input {
+  width: 100%;
+  margin-top: 4px;
+  padding: 9px 10px;
+  border: 1px solid #cbd2dd;
+  border-radius: 8px;
+}
+
+.auth-card .btn-primary {
+  width: 100%;
+  margin-top: 6px;
+}
+
+.btn-primary {
+  background: #2456d6;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 16px;
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+}
+
+.form-error {
+  background: #fdeceb;
+  color: #9b1c1c;
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin-bottom: 14px;
+  font-size: 0.9rem;
+}
