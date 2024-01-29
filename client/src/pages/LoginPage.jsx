@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 import { login } from '../api/auth.js';
-import { setToken } from '../api/client.js';
+import { useAuth } from '../context/AuthContext.jsx';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -10,6 +10,7 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
   const navigate = useNavigate();
+  const { signIn } = useAuth();
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -17,7 +18,7 @@ export default function LoginPage() {
     setError('');
     try {
       const data = await login({ email, password });
-      setToken(data.token);
+      signIn(data);
       navigate('/');
     } catch (err) {
       setError(err.message);

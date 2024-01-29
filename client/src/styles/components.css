@@ -108,3 +108,22 @@
   margin-bottom: 14px;
   font-size: 0.9rem;
 }
+
+.sidebar-footer {
+  margin-top: auto;
+  border-top: 1px solid #1d3762;
+  padding-top: 12px;
+  font-size: 0.9rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-ghost {
+  background: none;
+  border: 1px solid #2c4a7c;
+  color: #b9c6dd;
+  border-radius: 8px;
+  padding: 6px 10px;
+}

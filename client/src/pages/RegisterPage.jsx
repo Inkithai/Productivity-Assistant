@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 import { register } from '../api/auth.js';
-import { setToken } from '../api/client.js';
+import { useAuth } from '../context/AuthContext.jsx';
 
 const MIN_PASSWORD_LENGTH = 8;
 
@@ -11,6 +11,7 @@ export default function RegisterPage() {
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
   const navigate = useNavigate();
+  const { signIn } = useAuth();
 
   function update(field) {
     return (e) => setForm((prev) => ({ ...prev, [field]: e.target.value }));
@@ -26,7 +27,7 @@ export default function RegisterPage() {
     setError('');
     try {
       const data = await register(form);
-      setToken(data.token);
+      signIn(data);
       navigate('/');
     } catch (err) {
       setError(err.message);
