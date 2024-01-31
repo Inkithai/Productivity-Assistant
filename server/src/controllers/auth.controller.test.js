@@ -23,6 +23,15 @@ describe('auth endpoints', () => {
       expect(saved.passwordHash).not.toBe('secret123');
     });
 
+    it('returns 400 with details for invalid input', async () => {
+      const res = await request(app)
+        .post('/api/auth/register')
+        .send({ email: 'not-an-email', password: 'x' });
+
+      expect(res.status).toBe(400);
+      expect(res.body.error.details).toEqual(expect.any(Array));
+    });
+
     it('rejects an already registered email', async () => {
       const payload = { name: 'Inki', email: 'dup@example.com', password: 'secret123' };
       await request(app).post('/api/auth/register').send(payload);
