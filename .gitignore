@@ -22,3 +22,6 @@ __pycache__/
 # misc
 *.log
 .DS_Store
+
+# lockfiles (will be committed once CI is in place)
+package-lock.json
