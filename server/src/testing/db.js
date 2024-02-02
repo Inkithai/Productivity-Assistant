@@ -3,8 +3,13 @@ const mongoose = require('mongoose');
 
 let mongoServer;
 
+// Newer distros (Debian 12+) only ship 7.x binaries.
+const MONGO_BINARY_VERSION = '7.0.14';
+
 async function connectTestDb() {
-  mongoServer = await MongoMemoryServer.create();
+  mongoServer = await MongoMemoryServer.create({
+    binary: { version: MONGO_BINARY_VERSION },
+  });
   await mongoose.connect(mongoServer.getUri());
 }
 
