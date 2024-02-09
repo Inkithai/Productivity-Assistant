@@ -12,6 +12,15 @@ function errorHandler(err, req, res, next) {
     });
   }
 
+  if (err.name === 'ZodError') {
+    return res.status(400).json({
+      error: {
+        message: 'Validation failed',
+        details: err.errors.map((issue) => `${issue.path.join('.') || 'body'}: ${issue.message}`),
+      },
+    });
+  }
+
   if (err.name === 'CastError') {
     return res.status(400).json({ error: { message: `Invalid value for ${err.path}` } });
   }
