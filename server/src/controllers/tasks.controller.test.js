@@ -104,6 +104,29 @@ describe('tasks endpoints', () => {
     expect(res.body.task.status).toBe('done');
   });
 
+  it('returns 404 when updating a missing task', async () => {
+    const res = await request(app)
+      .put('/api/tasks/000000000000000000000000')
+      .set(authHeader(first.token))
+      .send({ title: 'Nope' });
+
+    expect(res.status).toBe(404);
+  });
+
+  it('clears completedAt when a done task is reopened', async () => {
+    const create = await request(app)
+      .post('/api/tasks')
+      .set(authHeader(first.token))
+      .send({ title: 'Reopen me', status: 'done' });
+
+    const res = await request(app)
+      .put(`/api/tasks/${create.body.task._id}`)
+      .set(authHeader(first.token))
+      .send({ status: 'todo' });
+
+    expect(res.body.task.completedAt).toBeNull();
+  });
+
   it('deletes a task', async () => {
     const create = await request(app)
       .post('/api/tasks')
