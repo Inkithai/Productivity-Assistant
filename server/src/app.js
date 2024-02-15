@@ -4,6 +4,7 @@ const express = require('express');
 const config = require('./config/env');
 const authRoutes = require('./routes/auth.routes');
 const taskRoutes = require('./routes/tasks.routes');
+const noteRoutes = require('./routes/notes.routes');
 const { errorHandler } = require('./middleware/error.middleware');
 
 const app = express();
@@ -17,6 +18,7 @@ app.get('/health', (req, res) => {
 
 app.use('/api/auth', authRoutes);
 app.use('/api/tasks', taskRoutes);
+app.use('/api/notes', noteRoutes);
 
 app.use((req, res) => {
   res.status(404).json({ error: { message: 'Not found' } });
