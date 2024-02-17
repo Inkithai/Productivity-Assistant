@@ -1,12 +1,19 @@
 const Note = require('../models/note.model');
+const { buildPagination, paginationMeta } = require('../utils/pagination');
 
 async function listNotes(req, res) {
+  const { category, pinned, page, limit } = req.validatedQuery;
   const filter = { userId: req.user._id };
-  if (req.validatedQuery?.category) filter.category = req.validatedQuery.category;
-  if (req.validatedQuery?.pinned === true) filter.pinned = true;
+  if (category) filter.category = category;
+  if (pinned === true) filter.pinned = true;
 
-  const notes = await Note.find(filter).sort({ pinned: -1, updatedAt: -1 });
-  return res.json({ notes });
+  const { skip, page: safePage, limit: safeLimit } = buildPagination({ page, limit });
+  const [notes, total] = await Promise.all([
+    Note.find(filter).sort({ pinned: -1, updatedAt: -1 }).skip(skip).limit(safeLimit),
+    Note.countDocuments(filter),
+  ]);
+
+  return res.json({ notes, meta: paginationMeta({ page: safePage, limit: safeLimit, total }) });
 }
 
 async function createNote(req, res) {

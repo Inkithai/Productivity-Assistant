@@ -75,6 +75,24 @@ describe('tasks endpoints', () => {
     expect(res.body.tasks[0].status).toBe('done');
   });
 
+  it('paginates the task list', async () => {
+    const creations = Array.from({ length: 25 }, (_, i) =>
+      request(app)
+        .post('/api/tasks')
+        .set(authHeader(first.token))
+        .send({ title: `Task ${i + 1}` })
+    );
+    await Promise.all(creations);
+
+    const res = await request(app)
+      .get('/api/tasks')
+      .query({ page: 2 })
+      .set(authHeader(first.token));
+
+    expect(res.body.tasks).toHaveLength(5);
+    expect(res.body.meta).toMatchObject({ page: 2, limit: 20, total: 25, pages: 2 });
+  });
+
   it('returns 404 for a task owned by someone else', async () => {
     const create = await request(app)
       .post('/api/tasks')

@@ -1,5 +1,7 @@
 const { z } = require('zod');
 
+const { paginationQuery } = require('./common.schema');
+
 const NOTE_CATEGORIES = ['general', 'meeting', 'idea', 'study', 'project'];
 
 const noteBody = z.object({
@@ -10,7 +12,7 @@ const noteBody = z.object({
   pinned: z.boolean().optional(),
 });
 
-const noteListQuery = z.object({
+const noteListQuery = paginationQuery.extend({
   category: z.enum(NOTE_CATEGORIES).optional(),
   pinned: z
     .enum(['true', 'false'])

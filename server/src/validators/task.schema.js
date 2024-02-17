@@ -1,5 +1,7 @@
 const { z } = require('zod');
 
+const { paginationQuery } = require('./common.schema');
+
 const TASK_STATUSES = ['todo', 'in_progress', 'done'];
 const TASK_PRIORITIES = ['low', 'medium', 'high'];
 
@@ -15,4 +17,10 @@ const taskBody = z.object({
 const taskCreate = taskBody;
 const taskUpdate = taskBody.partial();
 
-module.exports = { taskCreate, taskUpdate };
+const taskListQuery = paginationQuery.extend({
+  status: z.enum(TASK_STATUSES).optional(),
+  priority: z.enum(TASK_PRIORITIES).optional(),
+  tag: z.string().trim().min(1).optional(),
+});
+
+module.exports = { taskCreate, taskUpdate, taskListQuery };

@@ -1,17 +1,20 @@
 const Task = require('../models/task.model');
+const { buildPagination, paginationMeta } = require('../utils/pagination');
 
-function buildFilter(req) {
+async function listTasks(req, res) {
+  const { status, priority, tag, page, limit } = req.validatedQuery;
   const filter = { userId: req.user._id };
-  const { status, priority, tag } = req.query;
   if (status) filter.status = status;
   if (priority) filter.priority = priority;
   if (tag) filter.tags = tag;
-  return filter;
-}
 
-async function listTasks(req, res) {
-  const tasks = await Task.find(buildFilter(req)).sort({ dueDate: 1, createdAt: -1 });
-  return res.json({ tasks });
+  const { skip, page: safePage, limit: safeLimit } = buildPagination({ page, limit });
+  const [tasks, total] = await Promise.all([
+    Task.find(filter).sort({ dueDate: 1, createdAt: -1 }).skip(skip).limit(safeLimit),
+    Task.countDocuments(filter),
+  ]);
+
+  return res.json({ tasks, meta: paginationMeta({ page: safePage, limit: safeLimit, total }) });
 }
 
 async function createTask(req, res) {
