@@ -4,6 +4,7 @@ import { useAuth } from './context/AuthContext.jsx';
 import AppLayout from './components/layout/AppLayout.jsx';
 import LoginPage from './pages/LoginPage.jsx';
 import RegisterPage from './pages/RegisterPage.jsx';
+import TasksPage from './pages/TasksPage.jsx';
 
 function RequireAuth({ children }) {
   const { user, ready } = useAuth();
@@ -27,6 +28,7 @@ export default function App() {
           }
         >
           <Route index element={<p className="muted">Your dashboard will live here.</p>} />
+          <Route path="tasks" element={<TasksPage />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
