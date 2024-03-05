@@ -5,6 +5,7 @@ import AppLayout from './components/layout/AppLayout.jsx';
 import LoginPage from './pages/LoginPage.jsx';
 import RegisterPage from './pages/RegisterPage.jsx';
 import TasksPage from './pages/TasksPage.jsx';
+import NotesPage from './pages/NotesPage.jsx';
 
 function RequireAuth({ children }) {
   const { user, ready } = useAuth();
@@ -29,6 +30,7 @@ export default function App() {
         >
           <Route index element={<p className="muted">Your dashboard will live here.</p>} />
           <Route path="tasks" element={<TasksPage />} />
+          <Route path="notes" element={<NotesPage />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
