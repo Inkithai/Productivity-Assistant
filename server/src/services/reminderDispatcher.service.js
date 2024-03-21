@@ -18,11 +18,16 @@ async function dispatchDueReminders(now = new Date()) {
 }
 
 async function dispatchReminder(reminder) {
-  emitToUser(reminder.userId, 'reminder:due', {
-    id: reminder._id,
-    title: reminder.title,
-    message: reminder.message,
-  });
+  // Claim the reminder first: if another process already picked it up the
+  // update matches nothing and we skip it, otherwise a crash between emit
+  // and save would cause duplicate notifications on restart.
+  const claimed = await Reminder.updateOne(
+    { _id: reminder._id, status: 'scheduled' },
+    { status: 'sent', sentAt: new Date() }
+  );
+  if (claimed.modifiedCount === 0) {
+    return null;
+  }
 
   const notification = await Notification.create({
     userId: reminder.userId,
@@ -32,9 +37,11 @@ async function dispatchReminder(reminder) {
     meta: { reminderId: reminder._id, taskId: reminder.taskId, eventId: reminder.eventId },
   });
 
-  reminder.status = 'sent';
-  reminder.sentAt = new Date();
-  await reminder.save();
+  emitToUser(reminder.userId, 'reminder:due', {
+    id: notification._id,
+    title: reminder.title,
+    message: reminder.message,
+  });
 
   return notification;
 }
