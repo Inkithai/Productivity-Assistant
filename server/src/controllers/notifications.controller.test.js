@@ -2,11 +2,15 @@ const request = require('supertest');
 
 const app = require('../app');
 const Notification = require('../models/notification.model');
-const { authHeader } = require('../testing/db');
+const { connectTestDb, clearTestDb, disconnectTestDb, authHeader } = require('../testing/db');
 const { registerUser } = require('../testing/fixtures');
 
 describe('notifications endpoints', () => {
   let auth;
+
+  beforeAll(connectTestDb);
+  afterEach(clearTestDb);
+  afterAll(disconnectTestDb);
 
   beforeEach(async () => {
     auth = await registerUser();
