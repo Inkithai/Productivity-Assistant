@@ -1,6 +1,7 @@
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 
 import { useAuth } from '../../context/AuthContext.jsx';
+import Topbar from './Topbar.jsx';
 
 const NAV_ITEMS = [
   { to: '/', label: 'Dashboard', end: true },
@@ -39,9 +40,12 @@ export default function AppLayout() {
           </button>
         </div>
       </aside>
-      <main className="app-content">
-        <Outlet />
-      </main>
+      <div className="app-main">
+        <Topbar title="Productivity Assistant" />
+        <main className="app-content">
+          <Outlet />
+        </main>
+      </div>
     </div>
   );
 }
