@@ -24,32 +24,32 @@ export default function AppLayout() {
 
   return (
     <ToastProvider>
-    <div className="app-shell">
-      <aside className="sidebar">
-        <div className="sidebar-brand">
-          Productivity<span>Assistant</span>
-        </div>
-        <nav className="sidebar-nav">
-          {NAV_ITEMS.map((item) => (
-            <NavLink key={item.to} to={item.to} end={item.end}>
-              {item.label}
-            </NavLink>
-          ))}
-        </nav>
-        <div className="sidebar-footer">
-          <span className="muted">{user?.name}</span>
-          <button type="button" className="btn-ghost" onClick={handleSignOut}>
-            Sign out
-          </button>
-        </div>
-      </aside>
+      <div className="app-shell">
+        <aside className="sidebar">
+          <div className="sidebar-brand">
+            Productivity<span>Assistant</span>
+          </div>
+          <nav className="sidebar-nav">
+            {NAV_ITEMS.map((item) => (
+              <NavLink key={item.to} to={item.to} end={item.end}>
+                {item.label}
+              </NavLink>
+            ))}
+          </nav>
+          <div className="sidebar-footer">
+            <span className="muted">{user?.name}</span>
+            <button type="button" className="btn-ghost" onClick={handleSignOut}>
+              Sign out
+            </button>
+          </div>
+        </aside>
       <div className="app-main">
         <Topbar title="Productivity Assistant" />
         <main className="app-content">
           <Outlet />
         </main>
+        </div>
       </div>
-    </div>
     </ToastProvider>
   );
 }
