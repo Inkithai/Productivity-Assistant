@@ -664,3 +664,33 @@
 .notification-list li + li {
   border-top: 1px solid #edf0f5;
 }
+
+.toast-stack {
+  position: fixed;
+  bottom: 18px;
+  right: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 60;
+}
+
+.toast {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #1f2933;
+  color: #f5f7fa;
+  border-radius: 10px;
+  padding: 12px 14px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.25);
+  max-width: 340px;
+}
+
+.toast-reminder {
+  background: #6b3f00;
+}
+
+.toast .icon-btn {
+  color: #cbd2dd;
+}

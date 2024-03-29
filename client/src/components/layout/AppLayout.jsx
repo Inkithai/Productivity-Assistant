@@ -2,6 +2,8 @@ import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 
 import { useAuth } from '../../context/AuthContext.jsx';
 import Topbar from './Topbar.jsx';
+import ReminderToaster from './ReminderToaster.jsx';
+import { ToastProvider } from '../../context/ToastContext.jsx';
 
 const NAV_ITEMS = [
   { to: '/', label: 'Dashboard', end: true },
@@ -21,6 +23,7 @@ export default function AppLayout() {
   }
 
   return (
+    <ToastProvider>
     <div className="app-shell">
       <aside className="sidebar">
         <div className="sidebar-brand">
@@ -47,5 +50,6 @@ export default function AppLayout() {
         </main>
       </div>
     </div>
+    </ToastProvider>
   );
 }
