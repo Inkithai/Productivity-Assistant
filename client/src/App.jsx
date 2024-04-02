@@ -7,6 +7,7 @@ import RegisterPage from './pages/RegisterPage.jsx';
 import TasksPage from './pages/TasksPage.jsx';
 import NotesPage from './pages/NotesPage.jsx';
 import CalendarPage from './pages/CalendarPage.jsx';
+import DashboardPage from './pages/DashboardPage.jsx';
 
 function RequireAuth({ children }) {
   const { user, ready } = useAuth();
@@ -29,7 +30,7 @@ export default function App() {
             </RequireAuth>
           }
         >
-          <Route index element={<p className="muted">Your dashboard will live here.</p>} />
+          <Route index element={<DashboardPage />} />
           <Route path="tasks" element={<TasksPage />} />
           <Route path="notes" element={<NotesPage />} />
           <Route path="calendar" element={<CalendarPage />} />
