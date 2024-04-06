@@ -8,6 +8,7 @@ const noteRoutes = require('./routes/notes.routes');
 const eventRoutes = require('./routes/events.routes');
 const reminderRoutes = require('./routes/reminders.routes');
 const notificationRoutes = require('./routes/notifications.routes');
+const userRoutes = require('./routes/users.routes');
 const { errorHandler } = require('./middleware/error.middleware');
 
 const app = express();
@@ -25,6 +26,7 @@ app.use('/api/notes', noteRoutes);
 app.use('/api/events', eventRoutes);
 app.use('/api/reminders', reminderRoutes);
 app.use('/api/notifications', notificationRoutes);
+app.use('/api/users', userRoutes);
 
 app.use((req, res) => {
   res.status(404).json({ error: { message: 'Not found' } });
