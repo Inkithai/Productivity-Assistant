@@ -8,6 +8,7 @@ import TasksPage from './pages/TasksPage.jsx';
 import NotesPage from './pages/NotesPage.jsx';
 import CalendarPage from './pages/CalendarPage.jsx';
 import DashboardPage from './pages/DashboardPage.jsx';
+import SettingsPage from './pages/SettingsPage.jsx';
 
 function RequireAuth({ children }) {
   const { user, ready } = useAuth();
@@ -34,6 +35,7 @@ export default function App() {
           <Route path="tasks" element={<TasksPage />} />
           <Route path="notes" element={<NotesPage />} />
           <Route path="calendar" element={<CalendarPage />} />
+          <Route path="settings" element={<SettingsPage />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

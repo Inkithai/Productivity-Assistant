@@ -773,3 +773,27 @@
 .deadline-title {
   font-weight: 500;
 }
+
+.settings-page {
+  max-width: 560px;
+}
+
+.settings-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.settings-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.9rem;
+}
+
+.settings-form input,
+.settings-form select {
+  padding: 9px 10px;
+  border: 1px solid #cbd2dd;
+  border-radius: 8px;
+}

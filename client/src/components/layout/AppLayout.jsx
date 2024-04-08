@@ -11,6 +11,7 @@ const NAV_ITEMS = [
   { to: '/notes', label: 'Notes' },
   { to: '/calendar', label: 'Calendar' },
   { to: '/assistant', label: 'Assistant' },
+  { to: '/settings', label: 'Settings' },
 ];
 
 export default function AppLayout() {
