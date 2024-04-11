@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { updateProfile } from '../api/users.js';
 import { useAuth } from '../context/AuthContext.jsx';
 import { useToast } from '../context/ToastContext.jsx';
+import PasswordForm from '../components/settings/PasswordForm.jsx';
 
 const TIMEZONES = [
   'UTC',
@@ -67,6 +68,8 @@ export default function SettingsPage() {
           {busy ? 'Saving…' : 'Save profile'}
         </button>
       </form>
+
+      <PasswordForm />
     </section>
   );
 }
