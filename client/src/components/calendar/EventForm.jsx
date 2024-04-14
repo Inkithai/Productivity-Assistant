@@ -62,13 +62,7 @@ export default function EventForm({ event, onClose, onSaved }) {
   }
 
   return (
-    <form className="card event-form" onSubmit={handleSubmit}>
-      <header className="editor-head">
-        <h2>{isNew ? 'New event' : 'Edit event'}</h2>
-        <button type="button" className="icon-btn" onClick={onClose} aria-label="Close form">
-          ✕
-        </button>
-      </header>
+    <form className="event-form" onSubmit={handleSubmit}>
       {error && <div className="form-error">{error}</div>}
       <input
         value={form.title}

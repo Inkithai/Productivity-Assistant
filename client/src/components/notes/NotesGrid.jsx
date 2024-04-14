@@ -1,9 +1,10 @@
+import EmptyState from '../common/EmptyState.jsx';
 import { NOTE_CATEGORY_LABELS } from '../../utils/constants.js';
 import { formatDate } from '../../utils/dates.js';
 
 export default function NotesGrid({ notes, onOpen }) {
   if (!notes.length) {
-    return <p className="empty-state">No notes found. Create one to get started.</p>;
+    return <EmptyState hint="No notes found. Create one to get started." />;
   }
 
   return (

@@ -1,8 +1,9 @@
+import EmptyState from '../common/EmptyState.jsx';
 import TaskItem from './TaskItem.jsx';
 
-export default function TaskList({ tasks, onUpdate, onDelete, emptyHint = 'Nothing here yet.' }) {
+export default function TaskList({ tasks, onUpdate, onDelete, emptyHint }) {
   if (!tasks.length) {
-    return <p className="empty-state">{emptyHint}</p>;
+    return <EmptyState hint={emptyHint} />;
   }
 
   return (

@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { deleteEvent, listEvents } from '../api/events.js';
 import CalendarGrid from '../components/calendar/CalendarGrid.jsx';
 import EventForm from '../components/calendar/EventForm.jsx';
+import Modal from '../components/common/Modal.jsx';
 import { dayKey, formatDate, monthMatrix } from '../utils/dates.js';
 
 const MONTH_LABELS = [
@@ -127,9 +128,9 @@ export default function CalendarPage() {
       </div>
 
       {editing && (
-        <div className="modal-backdrop" onClick={(e) => e.target === e.currentTarget && setEditing(null)}>
-          <EventForm event={editing} onClose={() => setEditing(null)} onSaved={handleSaved} />
-        </div>
+        <Modal title={editing._id ? 'Edit event' : 'New event'} onClose={() => setEditing(null)}>
+          <EventForm event={editing} onSaved={handleSaved} />
+        </Modal>
       )}
     </section>
   );
