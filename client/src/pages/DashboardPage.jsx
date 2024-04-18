@@ -1,30 +1,32 @@
 import { useEffect, useState } from 'react';
 
+import { fetchSummary } from '../api/analytics.js';
 import { listTasks } from '../api/tasks.js';
 import StatCard from '../components/dashboard/StatCard.jsx';
 import UpcomingDeadlines from '../components/dashboard/UpcomingDeadlines.jsx';
-import { isOverdue } from '../utils/dates.js';
+import WeeklyProgress from '../components/dashboard/WeeklyProgress.jsx';
 
 export default function DashboardPage() {
+  const [summary, setSummary] = useState(null);
   const [tasks, setTasks] = useState([]);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let cancelled = false;
-    listTasks({ limit: 100 })
-      .then((data) => !cancelled && setTasks(data.tasks))
+    Promise.all([fetchSummary(), listTasks({ limit: 100 })])
+      .then(([analytics, taskData]) => {
+        if (cancelled) return;
+        setSummary(analytics.summary);
+        setTasks(taskData.tasks);
+        setError('');
+      })
       .catch((err) => !cancelled && setError(err.message))
       .finally(() => !cancelled && setLoading(false));
     return () => {
       cancelled = true;
     };
   }, []);
-
-  const open = tasks.filter((task) => task.status !== 'done');
-  const done = tasks.filter((task) => task.status === 'done');
-  const overdue = open.filter((task) => isOverdue(task.dueDate));
-  const completionRate = tasks.length ? Math.round((done.length / tasks.length) * 100) : 0;
 
   return (
     <section>
@@ -36,22 +38,24 @@ export default function DashboardPage() {
       {loading ? (
         <p className="muted">Loading your day…</p>
       ) : (
-        <>
-          <div className="stat-grid">
-            <StatCard label="Open tasks" value={open.length} />
-            <StatCard label="Completed" value={done.length} tone="good" />
-            <StatCard label="Overdue" value={overdue.length} tone="danger" />
-            <StatCard label="Completion rate" value={`${completionRate}%`} tone="info" />
-          </div>
-
-          <div className="dashboard-grid">
-            <UpcomingDeadlines tasks={tasks} />
-            <div className="card dashboard-panel">
-              <h2>This week</h2>
-              <p className="muted">Productivity charts are coming soon.</p>
+        summary && (
+          <>
+            <div className="stat-grid">
+              <StatCard label="Open tasks" value={summary.tasks.total - summary.tasks.done} />
+              <StatCard label="Completed" value={summary.tasks.done} tone="good" />
+              <StatCard label="Overdue" value={summary.tasks.overdue} tone="danger" />
+              <StatCard label="Completion rate" value={`${summary.completionRate}%`} tone="info" />
             </div>
-          </div>
-        </>
+
+            <div className="dashboard-grid">
+              <UpcomingDeadlines tasks={tasks} />
+              <div className="card dashboard-panel">
+                <h2>This week</h2>
+                <WeeklyProgress week={summary.week} />
+              </div>
+            </div>
+          </>
+        )
       )}
     </section>
   );

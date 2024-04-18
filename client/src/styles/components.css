@@ -814,3 +814,7 @@
 .modal-wide {
   width: min(560px, 100%);
 }
+
+.chart-box {
+  width: 100%;
+}
