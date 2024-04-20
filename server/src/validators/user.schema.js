@@ -1,12 +1,23 @@
 const { z } = require('zod');
 
+const TIMEZONE_AREAS = [
+  'Africa',
+  'America',
+  'Antarctica',
+  'Asia',
+  'Atlantic',
+  'Australia',
+  'Europe',
+  'Indian',
+  'Pacific',
+  'Etc',
+].join('|');
+
+const TIMEZONE_PATTERN = new RegExp(`^(${TIMEZONE_AREAS})\\/[A-Za-z0-9_+\\-]+$|^UTC$`);
+
 const profileUpdate = z.object({
   name: z.string().trim().min(1, 'Name is required').max(80).optional(),
-  timezone: z
-    .string()
-    .trim()
-    .regex(/^[A-Za-z]+(\/[A-Za-z0-9_+\-]+)?$/, 'Not a valid IANA timezone')
-    .optional(),
+  timezone: z.string().trim().regex(TIMEZONE_PATTERN, 'Not a valid IANA timezone').optional(),
 });
 
 const passwordChange = z
