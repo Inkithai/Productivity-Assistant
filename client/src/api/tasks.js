@@ -1,12 +1,4 @@
-import { apiFetch } from './client.js';
-
-function toQuery(params) {
-  const entries = Object.entries(params).filter(
-    ([, value]) => value !== undefined && value !== null && value !== ''
-  );
-  const query = new URLSearchParams(entries).toString();
-  return query ? `?${query}` : '';
-}
+import { apiFetch, toQuery } from './client.js';
 
 export function listTasks(params = {}) {
   return apiFetch(`/tasks${toQuery(params)}`);

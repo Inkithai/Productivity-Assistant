@@ -22,6 +22,14 @@ export function setToken(token) {
   }
 }
 
+export function toQuery(params) {
+  const entries = Object.entries(params).filter(
+    ([, value]) => value !== undefined && value !== null && value !== ''
+  );
+  const query = new URLSearchParams(entries).toString();
+  return query ? `?${query}` : '';
+}
+
 export async function apiFetch(path, { method = 'GET', body, signal } = {}) {
   const token = getToken();
   const res = await fetch(`${BASE_URL}/api${path}`, {

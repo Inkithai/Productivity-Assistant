@@ -1,6 +1,6 @@
-import { apiFetch } from './client.js';
+import { apiFetch, toQuery } from './client.js';
 
-import { toQuery } from './tasks.js';
+
 
 export function listNotes(params = {}) {
   return apiFetch(`/notes${toQuery(params)}`);
