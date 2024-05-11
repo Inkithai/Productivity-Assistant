@@ -49,11 +49,10 @@ def _days_in_month(year, month):
 
 
 def _shift_weekday(now, target, force_next_week=False):
+    if force_next_week:
+        start_of_next_week = now - timedelta(days=now.weekday()) + timedelta(days=7)
+        return start_of_next_week + timedelta(days=target)
     days_ahead = (target - now.weekday()) % 7
-    if days_ahead == 0:
-        days_ahead = 7 if force_next_week else 0
-    elif force_next_week:
-        days_ahead += 7
     return now + timedelta(days=days_ahead)
 
 
@@ -90,7 +89,7 @@ def _resolve_relative(match, now):
     unit = match.group(2).rstrip("s")
     deltas = {"minute": timedelta(minutes=amount), "hour": timedelta(hours=amount),
               "day": timedelta(days=amount), "week": timedelta(weeks=amount)}
-    return now + deltas[unit]
+    return now + deltas[unit], unit not in ("minute", "hour")
 
 
 def _resolve_calendar_date(day, month, year, now):
@@ -106,7 +105,7 @@ def _resolve_calendar_date(day, month, year, now):
 
 def _resolve_date_match(pattern, match, now):
     if pattern is RELATIVE_RE:
-        return _resolve_relative(match, now)
+        return _resolve_relative(match, now)[0]
 
     if pattern is TODAY_RE:
         return now
@@ -208,7 +207,8 @@ def parse_when(text, now=None):
             continue
         resolved = _resolve_date_match(pattern, match, now)
         if resolved is not None:
-            date_result = (match, resolved)
+            keeps_time = pattern is RELATIVE_RE and match.group(2).rstrip("s") in ("minute", "hour")
+            date_result = (match, resolved, keeps_time)
             break
 
     time_result = None
@@ -230,16 +230,18 @@ def parse_when(text, now=None):
             candidate += timedelta(days=1)
         return ParsedWhen(when=candidate, span=(time_result[0].start(), time_result[0].end()))
 
-    match, resolved = date_result
-    if time_result is None:
-        if match.group(0) in ("tonight", "tonite"):
-            hour, minute = 20, 0
-        else:
-            hour, minute = DEFAULT_TIME, 0
+    match, resolved, keeps_time = date_result
+    if keeps_time:
+        when = resolved.replace(second=0, microsecond=0)
     else:
-        hour, minute = time_result[1], time_result[2]
-
-    when = resolved.replace(hour=hour, minute=minute, second=0, microsecond=0)
+        if time_result is None:
+            if match.group(0) in ("tonight", "tonite"):
+                hour, minute = 20, 0
+            else:
+                hour, minute = DEFAULT_TIME, 0
+        else:
+            hour, minute = time_result[1], time_result[2]
+        when = resolved.replace(hour=hour, minute=minute, second=0, microsecond=0)
     start = match.start()
     end = match.end()
     if time_result and time_result[0].start() > match.end():
