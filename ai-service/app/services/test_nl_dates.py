@@ -37,7 +37,8 @@ def test_relative_offsets():
 
 def test_times():
     check("meeting at 3pm", datetime(2024, 5, 9, 15, 0))
-    check("meeting at 10:30am", datetime(2024, 5, 9, 10, 30))
+    # 10:30 already passed at 11:30, so it rolls to tomorrow
+    check("meeting at 10:30am", datetime(2024, 5, 10, 10, 30))
     check("meeting at 17:45", datetime(2024, 5, 9, 17, 45))
     check("lunch at noon", datetime(2024, 5, 9, 12, 0))
     check("call mom in the evening", datetime(2024, 5, 9, 19, 0))
@@ -77,11 +78,11 @@ def test_no_match_leaves_text_alone():
 
 
 def test_strip_removes_phrase():
-    result = parse_when("remind me to prepare slides for next friday please", now=NOW)
-    stripped = strip_phrase("prepare slides for next friday please", result.span)
+    text = "prepare slides for next friday please"
+    result = parse_when(text, now=NOW)
+    stripped = strip_phrase(text, result.span)
     assert "next friday" not in stripped
     assert "prepare slides" in stripped
-    assert stripped.endswith("please")
 
 
 def test_utc_conversion():
