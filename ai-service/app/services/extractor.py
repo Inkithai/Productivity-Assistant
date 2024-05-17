@@ -15,8 +15,8 @@ from app.services.nl_dates import parse_when, strip_phrase, to_utc_iso
 logger = logging.getLogger(__name__)
 
 LEAD_IN_RE = re.compile(
-    r"^(?:remind me to|remember to|don'?t forget to|i need to|i have to|"
-    r"i should|please|task:)\s*",
+    r"^(?:remind me (?:to|about)|reminder (?:to|about)|remember to|"
+    r"don'?t forget to|i need to|i have to|i should|please|task:)\s*",
     re.IGNORECASE,
 )
 
@@ -33,6 +33,7 @@ PRIORITY_HINTS = {
 
 TRAILING_PREPOSITION_RE = re.compile(r"\s+\b(?:for|on|at|by|to|in)\b\s*$", re.IGNORECASE)
 LEADING_PREPOSITION_RE = re.compile(r"^\b(?:for|on|at|by|to|in)\b\s+", re.IGNORECASE)
+LEADING_ARTICLE_RE = re.compile(r"^\b(?:the|a|an)\b\s+", re.IGNORECASE)
 
 SYSTEM_PROMPT = (
     "You convert quick notes into tasks. Reply with a single JSON object with "
@@ -56,6 +57,7 @@ def _detect_priority(text):
 def _tidy_title(text):
     cleaned = TRAILING_PREPOSITION_RE.sub("", text)
     cleaned = LEADING_PREPOSITION_RE.sub("", cleaned)
+    cleaned = LEADING_ARTICLE_RE.sub("", cleaned)
     cleaned = re.sub(r"\s{2,}", " ", cleaned).strip(" ,-:;!")
     if not cleaned:
         return cleaned
