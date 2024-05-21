@@ -3,6 +3,10 @@ const config = require('../config/env');
 // Keeps the final Express 4-arg signature intact.
 // eslint-disable-next-line no-unused-vars
 function errorHandler(err, req, res, next) {
+  if (err.name === 'AiServiceError') {
+    return res.status(err.status || 502).json({ error: { message: err.message } });
+  }
+
   if (err.name === 'ValidationError') {
     return res.status(400).json({
       error: {
