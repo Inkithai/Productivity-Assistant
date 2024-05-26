@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import { listTasks } from '../api/tasks.js';
+import SmartTaskInput from '../components/tasks/SmartTaskInput.jsx';
 import TaskForm from '../components/tasks/TaskForm.jsx';
 import TaskList from '../components/tasks/TaskList.jsx';
 
@@ -44,6 +45,7 @@ export default function TasksPage() {
       <header className="page-head">
         <h1>Tasks</h1>
       </header>
+      <SmartTaskInput onCreated={(task) => setTasks((prev) => [task, ...prev])} />
       <TaskForm onCreated={(task) => setTasks((prev) => [task, ...prev])} />
       <TaskList
         tasks={tasks}
