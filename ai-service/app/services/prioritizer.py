@@ -8,8 +8,8 @@ from datetime import datetime, timezone
 
 PRIORITY_WEIGHTS = {"high": 30, "medium": 18, "low": 8}
 
-HIGH_BUCKET = 60
-MEDIUM_BUCKET = 35
+HIGH_BUCKET = 45
+MEDIUM_BUCKET = 25
 
 
 def _parse_dt(value):
