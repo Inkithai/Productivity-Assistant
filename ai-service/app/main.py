@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 
-from app.routers import extraction, health, prioritization, summarization
+from app.routers import assistant, extraction, health, prioritization, summarization
 
 
 def create_app() -> FastAPI:
@@ -9,6 +9,7 @@ def create_app() -> FastAPI:
     app.include_router(extraction.router, prefix="/api/v1")
     app.include_router(prioritization.router, prefix="/api/v1")
     app.include_router(summarization.router, prefix="/api/v1")
+    app.include_router(assistant.router, prefix="/api/v1")
     return app
 
 
