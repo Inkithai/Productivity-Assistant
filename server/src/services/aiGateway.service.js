@@ -35,4 +35,12 @@ async function extractTask(text, timezone) {
   return data.task;
 }
 
-module.exports = { postJson, extractTask, AiServiceError };
+async function chat(message, context, history) {
+  return postJson('/assistant/chat', { message, context, history });
+}
+
+async function summarize(text, maxPoints) {
+  return postJson('/notes/summarize', { text, max_points: maxPoints });
+}
+
+module.exports = { postJson, extractTask, chat, summarize, AiServiceError };
