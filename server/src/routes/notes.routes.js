@@ -14,6 +14,7 @@ router.get('/', validate({ query: noteListQuery }), asyncHandler(controller.list
 router.post('/', validate({ body: noteBody }), asyncHandler(controller.createNote));
 router.get('/:id', asyncHandler(controller.getNote));
 router.put('/:id', validate({ body: noteBody.partial() }), asyncHandler(controller.updateNote));
+router.post('/:id/summarize', asyncHandler(controller.summarizeNote));
 router.delete('/:id', asyncHandler(controller.deleteNote));
 
 module.exports = router;

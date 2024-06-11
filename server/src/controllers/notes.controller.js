@@ -1,4 +1,5 @@
 const Note = require('../models/note.model');
+const { summarize } = require('../services/aiGateway.service');
 const { buildPagination, paginationMeta } = require('../utils/pagination');
 
 async function listNotes(req, res) {
@@ -40,6 +41,19 @@ async function updateNote(req, res) {
   return res.json({ note });
 }
 
+async function summarizeNote(req, res) {
+  const note = await Note.findOne({ _id: req.params.id, userId: req.user._id });
+  if (!note) {
+    return res.status(404).json({ error: { message: 'Note not found' } });
+  }
+  if (!note.content || note.content.trim().length < 20) {
+    return res.status(400).json({ error: { message: 'Note is too short to summarize' } });
+  }
+
+  const result = await summarize(note.content, 5);
+  return res.json(result);
+}
+
 async function deleteNote(req, res) {
   const note = await Note.findOneAndDelete({ _id: req.params.id, userId: req.user._id });
   if (!note) {
@@ -48,4 +62,4 @@ async function deleteNote(req, res) {
   return res.status(204).send();
 }
 
-module.exports = { listNotes, createNote, getNote, updateNote, deleteNote };
+module.exports = { listNotes, createNote, getNote, updateNote, summarizeNote, deleteNote };
