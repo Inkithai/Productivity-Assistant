@@ -21,3 +21,7 @@ export function updateNote(id, payload) {
 export function deleteNote(id) {
   return apiFetch(`/notes/${id}`, { method: 'DELETE' });
 }
+
+export function summarizeNote(id) {
+  return apiFetch(`/notes/${id}/summarize`, { method: 'POST' });
+}

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { createNote, updateNote } from '../../api/notes.js';
+import { createNote, summarizeNote, updateNote } from '../../api/notes.js';
 import { NOTE_CATEGORY_LABELS } from '../../utils/constants.js';
 
 export default function NoteEditor({ note, onClose, onSaved }) {
@@ -14,6 +14,8 @@ export default function NoteEditor({ note, onClose, onSaved }) {
   });
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
+  const [summary, setSummary] = useState(null);
+  const [summarizing, setSummarizing] = useState(false);
 
   function update(field) {
     return (e) =>
@@ -50,6 +52,19 @@ export default function NoteEditor({ note, onClose, onSaved }) {
       setError(err.message);
     } finally {
       setBusy(false);
+    }
+  }
+
+  async function handleSummarize() {
+    setSummarizing(true);
+    setError('');
+    try {
+      const result = await summarizeNote(note._id);
+      setSummary(result);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setSummarizing(false);
     }
   }
 
@@ -99,6 +114,21 @@ export default function NoteEditor({ note, onClose, onSaved }) {
         <button type="submit" className="btn-primary" disabled={busy}>
           {busy ? 'Saving…' : 'Save note'}
         </button>
+        {!isNew && (
+          <button type="button" className="btn-ghost" onClick={handleSummarize} disabled={summarizing}>
+            {summarizing ? 'Summarizing…' : '✨ Summarize with AI'}
+          </button>
+        )}
+        {summary && (
+          <div className="note-summary">
+            <h4>Key points</h4>
+            <ul>
+              {summary.key_points.map((point) => (
+                <li key={point}>{point}</li>
+              ))}
+            </ul>
+          </div>
+        )}
       </form>
     </div>
   );

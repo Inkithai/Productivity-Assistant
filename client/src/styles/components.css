@@ -1012,3 +1012,24 @@
   border: 1px solid #cbd2dd;
   border-radius: 10px;
 }
+
+.note-summary {
+  background: #f5f8ff;
+  border: 1px solid #d9e3f8;
+  border-radius: 10px;
+  padding: 12px 14px;
+}
+
+.note-summary h4 {
+  margin: 0 0 8px;
+  font-size: 0.9rem;
+}
+
+.note-summary ul {
+  margin: 0;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.9rem;
+}
