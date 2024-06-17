@@ -1,7 +1,7 @@
 const request = require('supertest');
 
 const app = require('../app');
-const { authHeader } = require('../testing/db');
+const { connectTestDb, disconnectTestDb, authHeader } = require('../testing/db');
 const { registerUser } = require('../testing/fixtures');
 
 jest.mock('../services/aiGateway.service', () => ({
@@ -16,8 +16,11 @@ describe('assistant endpoints', () => {
   let auth;
 
   beforeAll(async () => {
+    await connectTestDb();
     auth = await registerUser();
   });
+
+  afterAll(disconnectTestDb);
 
   it('proxies chat messages with the users context', async () => {
     chat.mockResolvedValue({ reply: 'You have 1 task due today', intent: 'today', provider: 'rules' });
