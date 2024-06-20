@@ -1,14 +1,25 @@
 from fastapi.testclient import TestClient
 
+from app.config import get_settings
 from app.main import create_app
 
 client = TestClient(create_app())
+client.headers.update({"x-service-token": get_settings().ai_service_token})
 
 
 def test_health():
     response = client.get("/health")
     assert response.status_code == 200
     assert response.json() == {"status": "ok"}
+
+
+def test_api_routes_require_service_token():
+    response = client.post(
+        "/api/v1/tasks/extract",
+        json={"text": "ship the release tomorrow"},
+        headers={"x-service-token": "wrong-token"},
+    )
+    assert response.status_code == 401
 
 
 def test_extract_task_endpoint():
