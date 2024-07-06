@@ -49,9 +49,9 @@ def test_search_items_ranks_relevant_first():
 
     assert provider == "fallback"
     assert results[0]["id"] in ("n1", "t1")
-    # hash collisions can sneak an unrelated item in, but never above a real match
-    grocery = next(item for item in results if item["id"] == "n2")
-    assert grocery["score"] < results[0]["score"]
+    # unrelated items either get filtered out by the score floor or rank below
+    grocery = [item for item in results if item["id"] == "n2"]
+    assert not grocery or grocery[0]["score"] < results[0]["score"]
     # everything was embedded fresh, so all vectors come back for storage
     assert {item["id"] for item in refreshes} == {"n1", "n2", "t1"}
 
