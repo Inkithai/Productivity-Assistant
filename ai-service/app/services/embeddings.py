@@ -14,7 +14,7 @@ from app.config import get_settings
 
 logger = logging.getLogger(__name__)
 
-FALLBACK_DIMENSIONS = 256
+FALLBACK_DIMENSIONS = 1024
 TOKEN_RE = re.compile(r"[a-z0-9']+")
 
 
