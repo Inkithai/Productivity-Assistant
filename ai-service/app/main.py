@@ -4,7 +4,7 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
 from app.config import get_settings
-from app.routers import assistant, extraction, health, prioritization, summarization
+from app.routers import assistant, extraction, health, prioritization, search, summarization
 
 
 def create_app() -> FastAPI:
@@ -24,6 +24,7 @@ def create_app() -> FastAPI:
     app.include_router(prioritization.router, prefix="/api/v1")
     app.include_router(summarization.router, prefix="/api/v1")
     app.include_router(assistant.router, prefix="/api/v1")
+    app.include_router(search.router, prefix="/api/v1")
     return app
 
 

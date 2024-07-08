@@ -85,6 +85,32 @@ def test_summarize_endpoint():
     assert body["summary"]
 
 
+def test_search_endpoint_ranks_items():
+    response = client.post(
+        "/api/v1/search",
+        json={
+            "query": "interview preparation",
+            "items": [
+                {"id": "n1", "type": "note", "title": "Interview questions", "content": "prepare answers"},
+                {"id": "n2", "type": "note", "title": "Grocery list", "content": "milk and eggs"},
+            ],
+            "limit": 5,
+        },
+    )
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["provider"] == "fallback"
+    assert body["results"], "expected at least one result"
+    assert body["results"][0]["id"] == "n1"
+    assert len(body["embeddings"]) == 2
+
+
+def test_search_rejects_short_query():
+    response = client.post("/api/v1/search", json={"query": "a", "items": []})
+    assert response.status_code == 422
+
+
 def test_summarize_rejects_empty_text():
     response = client.post("/api/v1/notes/summarize", json={"text": "short"})
     assert response.status_code == 422
