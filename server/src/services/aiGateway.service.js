@@ -43,4 +43,8 @@ async function summarize(text, maxPoints) {
   return postJson('/notes/summarize', { text, max_points: maxPoints });
 }
 
-module.exports = { postJson, extractTask, chat, summarize, AiServiceError };
+async function search(query, items, limit) {
+  return postJson('/search', { query, items, limit });
+}
+
+module.exports = { postJson, extractTask, chat, summarize, search, AiServiceError };
