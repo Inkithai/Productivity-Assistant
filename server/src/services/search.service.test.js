@@ -20,6 +20,7 @@ describe('search endpoints', () => {
   afterAll(disconnectTestDb);
 
   beforeEach(async () => {
+    gatewaySearch.mockReset();
     auth = await registerUser();
   });
 
@@ -49,6 +50,7 @@ describe('search endpoints', () => {
   });
 
   it('returns ranked results', async () => {
+    await Note.create({ userId: auth.user._id, title: 'Interview prep' });
     gatewaySearch.mockResolvedValue({
       results: [{ id: 'n1', type: 'note', title: 'Interview prep', score: 0.42 }],
       embeddings: [],
@@ -92,12 +94,13 @@ describe('search endpoints', () => {
     await Note.create({ userId: other.user._id, title: 'Private note' });
     gatewaySearch.mockResolvedValue({ results: [], embeddings: [] });
 
-    await request(app)
+    const res = await request(app)
       .get('/api/search')
       .query({ q: 'private' })
       .set(authHeader(auth.token));
 
-    const [, items] = gatewaySearch.mock.calls.at(-1);
-    expect(items).toHaveLength(0);
+    // the caller has nothing searchable, so the AI service is never involved
+    expect(res.status).toBe(200);
+    expect(gatewaySearch).not.toHaveBeenCalled();
   });
 });
