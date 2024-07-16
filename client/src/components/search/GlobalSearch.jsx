@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import { searchEverything } from '../../api/search.js';
-import { useDebouncedValue } from '../../hooks/useDebouncedValue.js';
+import useDebouncedValue from '../../hooks/useDebouncedValue.js';
 
 const TYPE_ROUTES = {
   task: '/tasks',
