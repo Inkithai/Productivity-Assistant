@@ -18,48 +18,54 @@ function renderSearch() {
   );
 }
 
+function type(text) {
+  fireEvent.change(screen.getByLabelText(/search tasks and notes/i), {
+    target: { value: text },
+  });
+}
+
 describe('GlobalSearch', () => {
   beforeEach(() => {
     searchApi.searchEverything.mockReset();
-    vi.useFakeTimers();
   });
-
-  afterEach(() => {
-    vi.useRealTimers();
-  });
-
-  async function type(text) {
-    fireEvent.change(screen.getByLabelText(/search tasks and notes/i), {
-      target: { value: text },
-    });
-    vi.advanceTimersByTime(350);
-  }
 
   it('does not search for short queries', async () => {
     renderSearch();
-    await type('a');
+    type('a');
+    // give the debounce plenty of time to prove it stays quiet
+    await new Promise((resolve) => setTimeout(resolve, 450));
     expect(searchApi.searchEverything).not.toHaveBeenCalled();
   });
 
   it('searches once input settles', async () => {
     searchApi.searchEverything.mockResolvedValue({
-      results: [
-        { id: 'n1', type: 'note', title: 'Interview questions', score: 0.42 },
-      ],
+      results: [{ id: 'n1', type: 'note', title: 'Interview questions', score: 0.42 }],
     });
 
     renderSearch();
-    await type('interview');
+    type('interview');
 
     await waitFor(() => expect(searchApi.searchEverything).toHaveBeenCalledWith('interview'));
     expect(await screen.findByText('Interview questions')).toBeInTheDocument();
+  });
+
+  it('collapses duplicate keystrokes into one query', async () => {
+    searchApi.searchEverything.mockResolvedValue({ results: [] });
+
+    renderSearch();
+    type('in');
+    type('int');
+    type('inte');
+
+    await waitFor(() => expect(searchApi.searchEverything).toHaveBeenCalledTimes(1));
+    expect(searchApi.searchEverything).toHaveBeenCalledWith('inte');
   });
 
   it('shows a friendly empty state', async () => {
     searchApi.searchEverything.mockResolvedValue({ results: [] });
 
     renderSearch();
-    await type('nothinglikeit');
+    type('nothinglikeit');
 
     expect(await screen.findByText(/nothing matched/i)).toBeInTheDocument();
   });
@@ -68,8 +74,9 @@ describe('GlobalSearch', () => {
     searchApi.searchEverything.mockRejectedValue(new Error('boom'));
 
     renderSearch();
-    await type('anything');
+    type('anything');
 
-    await waitFor(() => expect(screen.getByLabelText(/search tasks and notes/i)).toBeInTheDocument());
+    await waitFor(() => expect(searchApi.searchEverything).toHaveBeenCalled());
+    expect(screen.getByLabelText(/search tasks and notes/i)).toBeInTheDocument();
   });
 });
