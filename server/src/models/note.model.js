@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 
+const { embeddingField } = require('./embeddingField');
+
 const NOTE_CATEGORIES = ['general', 'meeting', 'idea', 'study', 'project'];
 
 const noteSchema = new mongoose.Schema(
@@ -34,6 +36,7 @@ const noteSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    embedding: embeddingField,
   },
   { timestamps: true }
 );

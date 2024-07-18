@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 
+const { embeddingField } = require('./embeddingField');
+
 const TASK_STATUSES = ['todo', 'in_progress', 'done'];
 const TASK_PRIORITIES = ['low', 'medium', 'high'];
 
@@ -45,6 +47,7 @@ const taskSchema = new mongoose.Schema(
       type: Date,
       default: null,
     },
+    embedding: embeddingField,
   },
   { timestamps: true }
 );

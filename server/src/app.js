@@ -11,6 +11,7 @@ const notificationRoutes = require('./routes/notifications.routes');
 const userRoutes = require('./routes/users.routes');
 const analyticsRoutes = require('./routes/analytics.routes');
 const assistantRoutes = require('./routes/assistant.routes');
+const searchRoutes = require('./routes/search.routes');
 const { errorHandler } = require('./middleware/error.middleware');
 
 const app = express();
@@ -31,6 +32,7 @@ app.use('/api/notifications', notificationRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/assistant', assistantRoutes);
+app.use('/api/search', searchRoutes);
 
 app.use((req, res) => {
   res.status(404).json({ error: { message: 'Not found' } });
