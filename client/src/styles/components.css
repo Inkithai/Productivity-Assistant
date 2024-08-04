@@ -1084,3 +1084,7 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+.theme-toggle {
+  font-size: 1.05rem;
+}
