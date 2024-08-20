@@ -9,5 +9,6 @@ const router = express.Router();
 router.use(requireAuth);
 
 router.get('/summary', asyncHandler(controller.getSummary));
+router.get('/trends', asyncHandler(controller.getTrends));
 
 module.exports = router;

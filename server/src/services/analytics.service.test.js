@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const TaskModel = require('../models/task.model');
 const User = require('../models/user.model');
-const { buildSummary, weekBuckets } = require('./analytics.service');
+const { buildSummary, buildTrends, weekBuckets } = require('./analytics.service');
 const { connectTestDb, clearTestDb, disconnectTestDb } = require('../testing/db');
 
 describe('analytics summary', () => {
@@ -69,6 +69,40 @@ describe('analytics summary', () => {
     const todayBucket = summary.week[6];
     expect(todayBucket.completed).toBe(1);
     expect(summary.week.slice(0, 6).every((day) => day.completed === 0)).toBe(true);
+  });
+
+  it('builds six months of completion trends', async () => {
+    const user = await seedUser();
+    const now = new Date();
+
+    await TaskModel.create([
+      { userId: user._id, title: 'Recent win', status: 'done', completedAt: now },
+      { userId: user._id, title: 'Older win', status: 'done', completedAt: new Date(now.getFullYear(), now.getMonth() - 2, 10) },
+    ]);
+
+    const trends = await buildTrends(user._id, now);
+
+    expect(trends.monthly).toHaveLength(6);
+    expect(trends.monthly[5].completed).toBe(1);
+    expect(trends.monthly[3].completed).toBe(1);
+    expect(trends.monthly.filter((month) => month.completed > 0)).toHaveLength(2);
+  });
+
+  it('summarises open workload by tag', async () => {
+    const user = await seedUser();
+
+    await TaskModel.create([
+      { userId: user._id, title: 'A', status: 'todo', tags: ['work', 'api'] },
+      { userId: user._id, title: 'B', status: 'in_progress', tags: ['work'] },
+      { userId: user._id, title: 'C', status: 'done', tags: ['work'] },
+      { userId: user._id, title: 'D', status: 'todo', tags: ['home'] },
+    ]);
+
+    const trends = await buildTrends(user._id);
+
+    expect(trends.byTag[0]).toEqual({ tag: 'work', open: 2 });
+    expect(trends.byTag).toContainEqual({ tag: 'home', open: 1 });
+    expect(trends.byTag).not.toContainEqual(expect.objectContaining({ tag: 'api', open: 2 }));
   });
 
   it('handles users without tasks', async () => {
