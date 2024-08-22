@@ -1088,3 +1088,59 @@
 .theme-toggle {
   font-size: 1.05rem;
 }
+
+.trends-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-top: 14px;
+}
+
+@media (max-width: 768px) {
+  .trends-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.workload-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.workload-list li {
+  display: grid;
+  grid-template-columns: 90px 1fr 28px;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.88rem;
+}
+
+.workload-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.workload-bar {
+  background: var(--border-soft);
+  border-radius: 999px;
+  height: 10px;
+  overflow: hidden;
+  display: block;
+}
+
+.workload-fill {
+  display: block;
+  height: 100%;
+  background: var(--primary);
+  border-radius: 999px;
+}
+
+.workload-count {
+  text-align: right;
+  color: var(--muted);
+}

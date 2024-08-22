@@ -4,6 +4,7 @@ import { fetchSummary } from '../api/analytics.js';
 import { listTasks } from '../api/tasks.js';
 import StatCard from '../components/dashboard/StatCard.jsx';
 import UpcomingDeadlines from '../components/dashboard/UpcomingDeadlines.jsx';
+import TrendsPanel from '../components/dashboard/TrendsPanel.jsx';
 import WeeklyProgress from '../components/dashboard/WeeklyProgress.jsx';
 
 export default function DashboardPage() {
@@ -54,6 +55,8 @@ export default function DashboardPage() {
                 <WeeklyProgress week={summary.week} />
               </div>
             </div>
+
+            <TrendsPanel />
           </>
         )
       )}
