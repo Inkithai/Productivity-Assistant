@@ -46,7 +46,6 @@ describe('reminders endpoints', () => {
 
   it('snoozes by the requested minutes', async () => {
     const create = await createReminder();
-    const before = new Date(create.body.reminder.remindAt).getTime();
 
     const res = await request(app)
       .post(`/api/reminders/${create.body.reminder._id}/snooze`)
@@ -54,9 +53,10 @@ describe('reminders endpoints', () => {
       .send({ minutes: 30 });
 
     expect(res.status).toBe(200);
+    // "snooze 30" means "remind me again in half an hour" from now
     const after = new Date(res.body.reminder.remindAt).getTime();
     expect(after).toBeGreaterThanOrEqual(Date.now() + 29 * 60 * 1000);
-    expect(after).toBeGreaterThan(before);
+    expect(after).toBeLessThanOrEqual(Date.now() + 31 * 60 * 1000);
   });
 
   it('does not resurrect a cancelled reminder', async () => {
