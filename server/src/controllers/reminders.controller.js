@@ -35,6 +35,9 @@ async function snoozeReminder(req, res) {
   if (!reminder) {
     return res.status(404).json({ error: { message: 'Reminder not found' } });
   }
+  if (reminder.status === 'cancelled') {
+    return res.status(409).json({ error: { message: 'Reminder was cancelled' } });
+  }
 
   const snoozedUntil = new Date(Date.now() + req.body.minutes * 60 * 1000);
   reminder.status = 'scheduled';
