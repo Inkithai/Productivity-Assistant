@@ -1,0 +1,37 @@
+services:
+  - type: web
+    name: pa-api
+    runtime: node
+    rootDir: server
+    buildCommand: npm ci
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGODB_URI
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: CLIENT_ORIGIN
+        sync: false
+      - key: AI_SERVICE_URL
+        value: http://pa-ai:8000
+      - key: AI_SERVICE_TOKEN
+        sync: false
+
+  - type: web
+    name: pa-ai
+    runtime: python
+    rootDir: ai-service
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: AI_SERVICE_TOKEN
+        sync: false
+      - key: SERVER_URL
+        value: http://pa-api:4000
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: PYTHON_VERSION
+        value: "3.11.9"
