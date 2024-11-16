@@ -20,7 +20,8 @@
     "jsonwebtoken": "^9.0.2",
     "cors": "^2.8.5",
     "zod": "^3.22.4",
-    "socket.io": "^4.7.4"
+    "socket.io": "^4.7.4",
+    "express-rate-limit": "^7.2.0"
   },
   "devDependencies": {
     "nodemon": "^3.0.3",

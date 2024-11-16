@@ -13,6 +13,7 @@ const analyticsRoutes = require('./routes/analytics.routes');
 const assistantRoutes = require('./routes/assistant.routes');
 const searchRoutes = require('./routes/search.routes');
 const { errorHandler } = require('./middleware/error.middleware');
+const { createAuthLimiter } = require('./middleware/rateLimit.middleware');
 
 const app = express();
 
@@ -22,6 +23,11 @@ app.use(express.json());
 app.get('/health', (req, res) => {
   res.json({ status: 'ok' });
 });
+
+// brute-force protection; skipped in tests so suites can register freely
+if (config.env !== 'test') {
+  app.use('/api/auth', createAuthLimiter());
+}
 
 app.use('/api/auth', authRoutes);
 app.use('/api/tasks', taskRoutes);
