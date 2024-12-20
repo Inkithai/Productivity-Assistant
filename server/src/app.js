@@ -18,7 +18,7 @@ const { createAuthLimiter } = require('./middleware/rateLimit.middleware');
 const app = express();
 
 app.use(cors({ origin: config.clientOrigin }));
-app.use(express.json());
+app.use(express.json({ limit: '128kb' }));
 
 app.get('/health', (req, res) => {
   res.json({ status: 'ok' });

@@ -7,6 +7,15 @@ function errorHandler(err, req, res, next) {
     return res.status(err.status || 502).json({ error: { message: err.message } });
   }
 
+  if (err.status === 413 || err.type === 'entity.too.large') {
+    return res.status(413).json({ error: { message: 'Request body is too large' } });
+  }
+
+  // body-parser syntax errors and friends carry a 4xx status already
+  if (err.status && err.status < 500) {
+    return res.status(err.status).json({ error: { message: 'Bad request' } });
+  }
+
   if (err.name === 'ValidationError') {
     return res.status(400).json({
       error: {
