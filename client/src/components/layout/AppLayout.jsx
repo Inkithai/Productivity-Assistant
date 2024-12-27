@@ -26,6 +26,9 @@ export default function AppLayout() {
 
   return (
     <ToastProvider>
+      <a href="#main-content" className="skip-link">
+        Skip to content
+      </a>
       <div className="app-shell">
         <aside className="sidebar">
           <div className="sidebar-brand">
