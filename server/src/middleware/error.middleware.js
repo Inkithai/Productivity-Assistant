@@ -1,7 +1,6 @@
 const config = require('../config/env');
 
-// Keeps the final Express 4-arg signature intact.
-// eslint-disable-next-line no-unused-vars
+// `next` is unused but Express requires the 4-arg signature here.
 function errorHandler(err, req, res, next) {
   if (err.name === 'AiServiceError') {
     return res.status(err.status || 502).json({ error: { message: err.message } });

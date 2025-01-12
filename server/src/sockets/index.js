@@ -19,7 +19,7 @@ function initSockets(httpServer) {
       const payload = verifyAuthToken(token);
       socket.data.userId = payload.sub;
       next();
-    } catch (err) {
+    } catch {
       next(new Error('unauthorized'));
     }
   });

@@ -1,5 +1,3 @@
-const mongoose = require('mongoose');
-
 const TaskModel = require('../models/task.model');
 const User = require('../models/user.model');
 const { buildSummary, buildTrends, weekBuckets } = require('./analytics.service');
