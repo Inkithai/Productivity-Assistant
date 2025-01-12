@@ -26,6 +26,7 @@ export default function AppLayout() {
 
   return (
     <ToastProvider>
+      <ReminderToaster />
       <a href="#main-content" className="skip-link">
         Skip to content
       </a>
