@@ -10,7 +10,7 @@ const EVENT_TYPES = [
   { value: 'other', label: 'Other' },
 ];
 
-export default function EventForm({ event, onClose, onSaved }) {
+export default function EventForm({ event, onSaved }) {
   const isNew = !event._id;
   const [form, setForm] = useState({
     title: event.title || '',

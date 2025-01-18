@@ -20,7 +20,7 @@ async function postJson(path, body) {
       body: JSON.stringify(body),
       signal: AbortSignal.timeout(config.aiServiceTimeoutMs),
     });
-  } catch (err) {
+  } catch {
     throw new AiServiceError('AI service is unavailable', 503);
   }
 

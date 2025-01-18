@@ -23,7 +23,7 @@ async function requireAuth(req, res, next) {
 
     req.user = user;
     return next();
-  } catch (err) {
+  } catch {
     return res.status(401).json({ error: { message: 'Invalid or expired token' } });
   }
 }
