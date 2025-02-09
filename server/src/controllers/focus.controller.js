@@ -36,8 +36,9 @@ async function sessionSummary(req, res) {
     startedAt: { $gte: since },
   }).select('startedAt minutes completed');
 
+  // oldest first so the client can chart it left to right
   const byDay = new Map();
-  for (let offset = days - 1; offset >= 0; offset -= 1) {
+  for (let offset = 0; offset < days; offset += 1) {
     const day = new Date(since);
     day.setDate(day.getDate() + offset);
     byDay.set(dayKey(day), { date: dayKey(day), minutes: 0, sessions: 0 });
