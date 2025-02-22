@@ -1251,3 +1251,53 @@
 .skip-link:focus {
   left: 8px;
 }
+
+.focus-card {
+  text-align: center;
+}
+
+.focus-clock {
+  font-size: 2.6rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  margin: 10px 0 6px;
+}
+
+.focus-idle {
+  color: var(--muted);
+}
+
+.focus-focus {
+  color: var(--primary);
+}
+
+.focus-break {
+  color: var(--success);
+}
+
+.focus-bar {
+  height: 8px;
+  background: var(--border-soft);
+  border-radius: 999px;
+  overflow: hidden;
+  margin: 8px 0 14px;
+}
+
+.focus-bar-fill {
+  display: block;
+  height: 100%;
+  background: var(--primary);
+  transition: width 1s linear;
+}
+
+.focus-controls {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  align-items: center;
+}
+
+.focus-count {
+  font-size: 0.85rem;
+  margin-bottom: 0;
+}
