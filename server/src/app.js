@@ -13,6 +13,7 @@ const analyticsRoutes = require('./routes/analytics.routes');
 const assistantRoutes = require('./routes/assistant.routes');
 const searchRoutes = require('./routes/search.routes');
 const focusRoutes = require('./routes/focus.routes');
+const habitRoutes = require('./routes/habits.routes');
 const { errorHandler } = require('./middleware/error.middleware');
 const { createAuthLimiter } = require('./middleware/rateLimit.middleware');
 
@@ -41,6 +42,7 @@ app.use('/api/analytics', analyticsRoutes);
 app.use('/api/assistant', assistantRoutes);
 app.use('/api/search', searchRoutes);
 app.use('/api/focus', focusRoutes);
+app.use('/api/habits', habitRoutes);
 
 app.use((req, res) => {
   res.status(404).json({ error: { message: 'Not found' } });
