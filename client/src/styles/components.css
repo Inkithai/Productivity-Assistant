@@ -1301,3 +1301,80 @@
   font-size: 0.85rem;
   margin-bottom: 0;
 }
+
+.habits-page {
+  max-width: 640px;
+}
+
+.habit-form {
+  margin-bottom: 18px;
+}
+
+.habit-form input,
+.habit-form select {
+  padding: 9px 10px;
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  width: 100%;
+}
+
+.habit-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.habit-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 14px;
+}
+
+.habit-check {
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  border: 2px solid var(--border-strong);
+  background: none;
+  font-size: 1rem;
+  color: var(--success);
+  flex-shrink: 0;
+}
+
+.habit-check-done {
+  background: var(--success-soft);
+  border-color: var(--success);
+}
+
+.habit-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.habit-name {
+  font-weight: 500;
+}
+
+.habit-progress {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.8rem;
+}
+
+.habit-progress .workload-bar {
+  width: 120px;
+}
+
+.habit-fill-done {
+  background: var(--success);
+}

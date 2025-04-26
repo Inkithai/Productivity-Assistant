@@ -12,6 +12,7 @@ const NAV_ITEMS = [
   { to: '/calendar', label: 'Calendar' },
   { to: '/assistant', label: 'Assistant' },
   { to: '/reminders', label: 'Reminders' },
+  { to: '/habits', label: 'Habits' },
   { to: '/settings', label: 'Settings' },
 ];
 
