@@ -1,3 +1,4 @@
+import { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 
 import { useAuth } from './context/AuthContext.jsx';
@@ -9,9 +10,11 @@ import NotesPage from './pages/NotesPage.jsx';
 import CalendarPage from './pages/CalendarPage.jsx';
 import DashboardPage from './pages/DashboardPage.jsx';
 import SettingsPage from './pages/SettingsPage.jsx';
-import AssistantPage from './pages/AssistantPage.jsx';
 import RemindersPage from './pages/RemindersPage.jsx';
 import HabitsPage from './pages/HabitsPage.jsx';
+
+// the chat page pulls in the socket connection, keep it out of the first paint
+const AssistantPage = lazy(() => import('./pages/AssistantPage.jsx'));
 
 function RequireAuth({ children }) {
   const { user, ready } = useAuth();
@@ -39,7 +42,14 @@ export default function App() {
           <Route path="notes" element={<NotesPage />} />
           <Route path="calendar" element={<CalendarPage />} />
           <Route path="settings" element={<SettingsPage />} />
-          <Route path="assistant" element={<AssistantPage />} />
+          <Route
+            path="assistant"
+            element={
+              <Suspense fallback={<p className="muted">Loading…</p>}>
+                <AssistantPage />
+              </Suspense>
+            }
+          />
           <Route path="reminders" element={<RemindersPage />} />
           <Route path="habits" element={<HabitsPage />} />
         </Route>
