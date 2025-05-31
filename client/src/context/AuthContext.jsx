@@ -2,6 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState } 
 
 import { fetchMe } from '../api/auth.js';
 import { getToken, setToken } from '../api/client.js';
+import { disconnectSocket } from '../api/socket.js';
 
 const AuthContext = createContext(null);
 
@@ -30,6 +31,7 @@ export function AuthProvider({ children }) {
   }, []);
 
   const signOut = useCallback(() => {
+    disconnectSocket();
     setToken(null);
     setUser(null);
   }, []);
