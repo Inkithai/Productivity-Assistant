@@ -75,6 +75,21 @@ describe('tasks endpoints', () => {
     expect(res.body.tasks[0].status).toBe('done');
   });
 
+  it('lists dated tasks before undated ones', async () => {
+    await request(app)
+      .post('/api/tasks')
+      .set(authHeader(first.token))
+      .send({ title: 'No date at all' });
+    await request(app)
+      .post('/api/tasks')
+      .set(authHeader(first.token))
+      .send({ title: 'Dated', dueDate: '2030-01-01' });
+
+    const res = await request(app).get('/api/tasks').set(authHeader(first.token));
+
+    expect(res.body.tasks.map((task) => task.title)).toEqual(['Dated', 'No date at all']);
+  });
+
   it('paginates the task list', async () => {
     const creations = Array.from({ length: 25 }, (_, i) =>
       request(app)
