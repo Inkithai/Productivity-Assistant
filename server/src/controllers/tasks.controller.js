@@ -10,7 +10,15 @@ async function listTasks(req, res) {
 
   const { skip, page: safePage, limit: safeLimit } = buildPagination({ page, limit });
   const [tasks, total] = await Promise.all([
-    Task.find(filter).sort({ dueDate: 1, createdAt: -1 }).skip(skip).limit(safeLimit),
+    // undated tasks sort last; a plain dueDate sort puts nulls first
+    Task.aggregate([
+      { $match: filter },
+      { $addFields: { dueForSort: { $ifNull: ['$dueDate', new Date('2999-01-01')] } } },
+      { $sort: { dueForSort: 1, createdAt: -1 } },
+      { $project: { dueForSort: 0 } },
+      { $skip: skip },
+      { $limit: safeLimit },
+    ]),
     Task.countDocuments(filter),
   ]);
 
