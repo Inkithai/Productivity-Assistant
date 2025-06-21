@@ -15,12 +15,21 @@ export default function ChatAssistant() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const listRef = useRef(null);
+  const pinnedToBottom = useRef(true);
 
   useEffect(() => {
-    if (listRef.current) {
-      listRef.current.scrollTop = listRef.current.scrollHeight;
+    const list = listRef.current;
+    if (list && pinnedToBottom.current) {
+      list.scrollTop = list.scrollHeight;
     }
   }, [messages, busy]);
+
+  function handleScroll() {
+    const list = listRef.current;
+    if (!list) return;
+    const distance = list.scrollHeight - list.scrollTop - list.clientHeight;
+    pinnedToBottom.current = distance < 60;
+  }
 
   async function send(text) {
     const message = (text ?? input).trim();
@@ -44,7 +53,7 @@ export default function ChatAssistant() {
 
   return (
     <div className="chat">
-      <div className="chat-messages" ref={listRef}>
+      <div className="chat-messages" ref={listRef} onScroll={handleScroll}>
         {messages.length === 0 && (
           <div className="chat-empty">
             <p>Ask me about your tasks, deadlines or notes.</p>
