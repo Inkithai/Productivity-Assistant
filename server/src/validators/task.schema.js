@@ -11,6 +11,7 @@ const taskBody = z.object({
   status: z.enum(TASK_STATUSES).optional(),
   priority: z.enum(TASK_PRIORITIES).optional(),
   dueDate: z.coerce.date().nullish(),
+  repeat: z.enum(['none', 'daily', 'weekly']).default('none'),
   tags: z.array(z.string().trim().min(1)).max(10).optional(),
 });
 

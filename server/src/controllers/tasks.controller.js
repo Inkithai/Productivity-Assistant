@@ -38,6 +38,23 @@ async function getTask(req, res) {
   return res.json({ task });
 }
 
+// completing a repeating task spawns the next occurrence
+async function spawnNext(task) {
+  const step = task.repeat === 'weekly' ? 7 : 1;
+  const dueDate = new Date(task.dueDate || Date.now());
+  dueDate.setDate(dueDate.getDate() + step);
+
+  return Task.create({
+    userId: task.userId,
+    title: task.title,
+    description: task.description,
+    priority: task.priority,
+    tags: task.tags,
+    repeat: task.repeat,
+    dueDate,
+  });
+}
+
 async function updateTask(req, res) {
   const task = await Task.findOne({ _id: req.params.id, userId: req.user._id });
   if (!task) {
@@ -45,6 +62,9 @@ async function updateTask(req, res) {
   }
 
   const { status, ...rest } = req.body;
+  const wasDone = task.status === 'done';
+  const willRepeat =
+    status === 'done' && !wasDone && task.repeat !== 'none' && task.repeat;
   Object.assign(task, rest);
 
   if (status && status !== task.status) {
@@ -53,7 +73,8 @@ async function updateTask(req, res) {
   }
 
   await task.save();
-  return res.json({ task });
+  const spawned = willRepeat ? await spawnNext(task) : null;
+  return res.json({ task, spawned: spawned ? spawned.toJSON() : null });
 }
 
 async function deleteTask(req, res) {

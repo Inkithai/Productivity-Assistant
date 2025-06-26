@@ -47,6 +47,11 @@ const taskSchema = new mongoose.Schema(
       type: Date,
       default: null,
     },
+    repeat: {
+      type: String,
+      enum: ['none', 'daily', 'weekly'],
+      default: 'none',
+    },
     embedding: embeddingField,
   },
   { timestamps: true }
