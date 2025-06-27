@@ -160,6 +160,57 @@ describe('tasks endpoints', () => {
     expect(res.body.task.completedAt).toBeNull();
   });
 
+  it('completing a daily task spawns the next occurrence', async () => {
+    const create = await request(app)
+      .post('/api/tasks')
+      .set(authHeader(first.token))
+      .send({ title: 'Morning review', repeat: 'daily', dueDate: '2030-01-10' });
+
+    const res = await request(app)
+      .put(`/api/tasks/${create.body.task._id}`)
+      .set(authHeader(first.token))
+      .send({ status: 'done' });
+
+    expect(res.status).toBe(200);
+    expect(res.body.task.status).toBe('done');
+    expect(res.body.spawned).toMatchObject({
+      title: 'Morning review',
+      status: 'todo',
+      repeat: 'daily',
+    });
+    expect(new Date(res.body.spawned.dueDate).getUTCDate()).toBe(11);
+  });
+
+  it('plain tasks do not spawn anything on completion', async () => {
+    const create = await request(app)
+      .post('/api/tasks')
+      .set(authHeader(first.token))
+      .send({ title: 'One-off' });
+
+    const res = await request(app)
+      .put(`/api/tasks/${create.body.task._id}`)
+      .set(authHeader(first.token))
+      .send({ status: 'done' });
+
+    expect(res.body.spawned).toBeNull();
+    const listed = await request(app).get('/api/tasks').set(authHeader(first.token));
+    expect(listed.body.tasks).toHaveLength(1);
+  });
+
+  it('weekly tasks jump forward seven days', async () => {
+    const create = await request(app)
+      .post('/api/tasks')
+      .set(authHeader(first.token))
+      .send({ title: 'Weekly report', repeat: 'weekly', dueDate: '2030-01-07' });
+
+    const res = await request(app)
+      .put(`/api/tasks/${create.body.task._id}`)
+      .set(authHeader(first.token))
+      .send({ status: 'done' });
+
+    expect(new Date(res.body.spawned.dueDate).toISOString()).toContain('2030-01-14');
+  });
+
   it('deletes a task', async () => {
     const create = await request(app)
       .post('/api/tasks')
