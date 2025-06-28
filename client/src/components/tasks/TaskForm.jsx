@@ -3,7 +3,14 @@ import { useState } from 'react';
 import { createTask } from '../../api/tasks.js';
 import { TASK_PRIORITY_LABELS } from '../../utils/constants.js';
 
-const EMPTY = { title: '', description: '', priority: 'medium', dueDate: '', tags: '' };
+const EMPTY = {
+  title: '',
+  description: '',
+  priority: 'medium',
+  dueDate: '',
+  tags: '',
+  repeat: 'none',
+};
 
 export default function TaskForm({ onCreated }) {
   const [form, setForm] = useState(EMPTY);
@@ -32,6 +39,7 @@ export default function TaskForm({ onCreated }) {
           .split(',')
           .map((tag) => tag.trim())
           .filter(Boolean),
+        repeat: form.repeat,
       };
       if (form.description.trim()) payload.description = form.description.trim();
 
@@ -76,6 +84,11 @@ export default function TaskForm({ onCreated }) {
           onChange={update('dueDate')}
           aria-label="Due date"
         />
+        <select value={form.repeat} onChange={update('repeat')} aria-label="Repeat">
+          <option value="none">No repeat</option>
+          <option value="daily">Daily</option>
+          <option value="weekly">Weekly</option>
+        </select>
         <input
           value={form.tags}
           onChange={update('tags')}

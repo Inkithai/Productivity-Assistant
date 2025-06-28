@@ -34,6 +34,9 @@ export default function TaskItem({ task, onUpdate, onDelete }) {
               {dueLabel(task.dueDate)}
             </span>
           )}
+          {task.repeat && task.repeat !== 'none' && (
+            <span className="tag">↻ {task.repeat}</span>
+          )}
           {task.tags?.map((tag) => (
             <span key={tag} className="tag">
               #{tag}
