@@ -52,6 +52,10 @@ const taskSchema = new mongoose.Schema(
       enum: ['none', 'daily', 'weekly'],
       default: 'none',
     },
+    sharedWith: {
+      type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+      default: [],
+    },
     embedding: embeddingField,
   },
   { timestamps: true }

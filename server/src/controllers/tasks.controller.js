@@ -1,9 +1,13 @@
 const Task = require('../models/task.model');
+const User = require('../models/user.model');
 const { buildPagination, paginationMeta } = require('../utils/pagination');
 
 async function listTasks(req, res) {
   const { status, priority, tag, page, limit } = req.validatedQuery;
-  const filter = { userId: req.user._id };
+  const filter = {
+    // own tasks plus tasks other people shared with this account
+    $or: [{ userId: req.user._id }, { sharedWith: req.user._id }],
+  };
   if (status) filter.status = status;
   if (priority) filter.priority = priority;
   if (tag) filter.tags = tag;
@@ -31,7 +35,7 @@ async function createTask(req, res) {
 }
 
 async function getTask(req, res) {
-  const task = await Task.findOne({ _id: req.params.id, userId: req.user._id });
+  const task = await Task.findOne(accessFilter(req, req.params.id));
   if (!task) {
     return res.status(404).json({ error: { message: 'Task not found' } });
   }
@@ -56,7 +60,7 @@ async function spawnNext(task) {
 }
 
 async function updateTask(req, res) {
-  const task = await Task.findOne({ _id: req.params.id, userId: req.user._id });
+  const task = await Task.findOne(accessFilter(req, req.params.id));
   if (!task) {
     return res.status(404).json({ error: { message: 'Task not found' } });
   }
@@ -77,6 +81,52 @@ async function updateTask(req, res) {
   return res.json({ task, spawned: spawned ? spawned.toJSON() : null });
 }
 
+function accessFilter(req, id) {
+  return {
+    _id: id,
+    $or: [{ userId: req.user._id }, { sharedWith: req.user._id }],
+  };
+}
+
+async function shareTask(req, res) {
+  const task = await Task.findOne({ _id: req.params.id, userId: req.user._id });
+  if (!task) {
+    return res.status(404).json({ error: { message: 'Task not found' } });
+  }
+
+  const collaborator = await User.findOne({ email: req.body.email.toLowerCase() });
+  if (!collaborator) {
+    return res.status(404).json({ error: { message: 'No account with that email' } });
+  }
+  if (String(collaborator._id) === String(task.userId)) {
+    return res.status(400).json({ error: { message: 'That is already the owner' } });
+  }
+
+  const already = task.sharedWith.some(
+    (id) => String(id) === String(collaborator._id)
+  );
+  if (!already) {
+    task.sharedWith.push(collaborator._id);
+    await task.save();
+  }
+
+  return res.json({
+    sharedWith: task.sharedWith.map((id) => ({ id: String(id), email: collaborator.email })),
+    alreadyShared: already,
+  });
+}
+
+async function unshareTask(req, res) {
+  const task = await Task.findOne({ _id: req.params.id, userId: req.user._id });
+  if (!task) {
+    return res.status(404).json({ error: { message: 'Task not found' } });
+  }
+
+  task.sharedWith = task.sharedWith.filter((id) => String(id) !== req.params.userId);
+  await task.save();
+  return res.status(204).send();
+}
+
 async function deleteTask(req, res) {
   const task = await Task.findOneAndDelete({ _id: req.params.id, userId: req.user._id });
   if (!task) {
@@ -85,4 +135,12 @@ async function deleteTask(req, res) {
   return res.status(204).send();
 }
 
-module.exports = { listTasks, createTask, getTask, updateTask, deleteTask };
+module.exports = {
+  listTasks,
+  createTask,
+  getTask,
+  updateTask,
+  shareTask,
+  unshareTask,
+  deleteTask,
+};

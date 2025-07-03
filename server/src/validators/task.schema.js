@@ -24,4 +24,8 @@ const taskListQuery = paginationQuery.extend({
   tag: z.string().trim().min(1).optional(),
 });
 
-module.exports = { taskCreate, taskUpdate, taskListQuery };
+const shareBody = z.object({
+  email: z.string().trim().toLowerCase().email('A valid email is required'),
+});
+
+module.exports = { taskCreate, taskUpdate, taskListQuery, shareBody };
