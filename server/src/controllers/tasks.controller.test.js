@@ -160,6 +160,7 @@ describe('tasks endpoints', () => {
     expect(res.body.task.completedAt).toBeNull();
   });
 
+<<<<<<< HEAD
   it('completing a daily task spawns the next occurrence', async () => {
     const create = await request(app)
       .post('/api/tasks')
@@ -209,6 +210,100 @@ describe('tasks endpoints', () => {
       .send({ status: 'done' });
 
     expect(new Date(res.body.spawned.dueDate).toISOString()).toContain('2030-01-14');
+=======
+  it('shares a task with another account', async () => {
+    const create = await request(app)
+      .post('/api/tasks')
+      .set(authHeader(first.token))
+      .send({ title: 'Shared work' });
+
+    const res = await request(app)
+      .post(`/api/tasks/${create.body.task._id}/share`)
+      .set(authHeader(first.token))
+      .send({ email: second.email });
+
+    expect(res.status).toBe(200);
+    expect(res.body.alreadyShared).toBe(false);
+    expect(res.body.sharedWith).toHaveLength(1);
+
+    const again = await request(app)
+      .post(`/api/tasks/${create.body.task._id}/share`)
+      .set(authHeader(first.token))
+      .send({ email: second.email });
+    expect(again.body.alreadyShared).toBe(true);
+  });
+
+  it('rejects sharing with unknown emails', async () => {
+    const create = await request(app)
+      .post('/api/tasks')
+      .set(authHeader(first.token))
+      .send({ title: 'Ghost share' });
+
+    const res = await request(app)
+      .post(`/api/tasks/${create.body.task._id}/share`)
+      .set(authHeader(first.token))
+      .send({ email: 'nobody@example.com' });
+
+    expect(res.status).toBe(404);
+  });
+
+  it('collaborators see and update shared tasks but cannot delete them', async () => {
+    const create = await request(app)
+      .post('/api/tasks')
+      .set(authHeader(first.token))
+      .send({ title: 'Collab', priority: 'high' });
+    await request(app)
+      .post(`/api/tasks/${create.body.task._id}/share`)
+      .set(authHeader(first.token))
+      .send({ email: second.email });
+
+    const listed = await request(app).get('/api/tasks').set(authHeader(second.token));
+    expect(listed.body.tasks.some((task) => task.title === 'Collab')).toBe(true);
+
+    const updated = await request(app)
+      .put(`/api/tasks/${create.body.task._id}`)
+      .set(authHeader(second.token))
+      .send({ status: 'in_progress' });
+    expect(updated.status).toBe(200);
+    expect(updated.body.task.status).toBe('in_progress');
+
+    const removed = await request(app)
+      .delete(`/api/tasks/${create.body.task._id}`)
+      .set(authHeader(second.token));
+    expect(removed.status).toBe(404);
+  });
+
+  it('non-collaborators still cannot access private tasks', async () => {
+    const create = await request(app)
+      .post('/api/tasks')
+      .set(authHeader(first.token))
+      .send({ title: 'Private' });
+
+    const res = await request(app)
+      .get(`/api/tasks/${create.body.task._id}`)
+      .set(authHeader(second.token));
+
+    expect(res.status).toBe(404);
+  });
+
+  it('removes a collaborator', async () => {
+    const create = await request(app)
+      .post('/api/tasks')
+      .set(authHeader(first.token))
+      .send({ title: 'Unshare me' });
+    const share = await request(app)
+      .post(`/api/tasks/${create.body.task._id}/share`)
+      .set(authHeader(first.token))
+      .send({ email: second.email });
+
+    const res = await request(app)
+      .delete(`/api/tasks/${create.body.task._id}/share/${share.body.sharedWith[0].id}`)
+      .set(authHeader(first.token));
+
+    expect(res.status).toBe(204);
+    const listed = await request(app).get('/api/tasks').set(authHeader(second.token));
+    expect(listed.body.tasks.some((task) => task.title === 'Unshare me')).toBe(false);
+>>>>>>> 5ec6efd (test(server): task sharing permissions)
   });
 
   it('deletes a task', async () => {
