@@ -15,3 +15,7 @@ export function updateTask(id, payload) {
 export function deleteTask(id) {
   return apiFetch(`/tasks/${id}`, { method: 'DELETE' });
 }
+
+export function shareTask(id, email) {
+  return apiFetch(`/tasks/${id}/share`, { method: 'POST', body: { email } });
+}

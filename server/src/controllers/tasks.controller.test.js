@@ -160,7 +160,6 @@ describe('tasks endpoints', () => {
     expect(res.body.task.completedAt).toBeNull();
   });
 
-<<<<<<< HEAD
   it('completing a daily task spawns the next occurrence', async () => {
     const create = await request(app)
       .post('/api/tasks')
@@ -210,7 +209,8 @@ describe('tasks endpoints', () => {
       .send({ status: 'done' });
 
     expect(new Date(res.body.spawned.dueDate).toISOString()).toContain('2030-01-14');
-=======
+  });
+
   it('shares a task with another account', async () => {
     const create = await request(app)
       .post('/api/tasks')
@@ -303,7 +303,6 @@ describe('tasks endpoints', () => {
     expect(res.status).toBe(204);
     const listed = await request(app).get('/api/tasks').set(authHeader(second.token));
     expect(listed.body.tasks.some((task) => task.title === 'Unshare me')).toBe(false);
->>>>>>> 5ec6efd (test(server): task sharing permissions)
   });
 
   it('deletes a task', async () => {

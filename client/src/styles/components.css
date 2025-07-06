@@ -1378,3 +1378,9 @@
 .habit-fill-done {
   background: var(--success);
 }
+
+.task-actions {
+  display: flex;
+  gap: 2px;
+  align-items: flex-start;
+}
