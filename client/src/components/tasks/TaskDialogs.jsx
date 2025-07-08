@@ -54,7 +54,7 @@ export function TaskEditDialog({ task, onClose, onSaved }) {
     <Modal title="Edit task" onClose={onClose}>
       <form className="event-form" onSubmit={handleSave}>
         {error && <div className="form-error">{error}</div>}
-        <input value={form.title} onChange={update('title')} aria-label="Task title" required />
+        <input value={form.title} onChange={update('title')} aria-label="Task title" />
         <textarea
           value={form.description}
           onChange={update('description')}

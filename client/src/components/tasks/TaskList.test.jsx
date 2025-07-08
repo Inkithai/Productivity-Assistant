@@ -3,6 +3,7 @@ import { vi } from 'vitest';
 
 import TaskList from './TaskList.jsx';
 import TaskForm from './TaskForm.jsx';
+import { TaskEditDialog, TaskShareDialog } from './TaskDialogs.jsx';
 
 import * as tasksApi from '../../api/tasks.js';
 
@@ -10,6 +11,7 @@ vi.mock('../../api/tasks.js', () => ({
   createTask: vi.fn(),
   updateTask: vi.fn(),
   deleteTask: vi.fn(),
+  shareTask: vi.fn(),
 }));
 
 function makeTask(overrides = {}) {
@@ -24,6 +26,13 @@ function makeTask(overrides = {}) {
 }
 
 describe('TaskList', () => {
+  beforeEach(() => {
+    tasksApi.createTask.mockReset();
+    tasksApi.updateTask.mockReset();
+    tasksApi.deleteTask.mockReset();
+    tasksApi.shareTask.mockReset();
+  });
+
   it('shows an empty state when there are no tasks', () => {
     render(<TaskList tasks={[]} onUpdate={() => {}} onDelete={() => {}} />);
     expect(screen.getByText(/nothing here yet/i)).toBeInTheDocument();
@@ -58,6 +67,51 @@ describe('TaskList', () => {
     fireEvent.click(screen.getByRole('checkbox'));
     await waitFor(() => expect(onUpdate).toHaveBeenCalled());
     expect(tasksApi.updateTask).toHaveBeenCalledWith('t1', { status: 'done' });
+  });
+
+  it('opens the edit dialog and saves changes', async () => {
+    tasksApi.updateTask.mockResolvedValue({ task: makeTask({ title: 'Renamed' }) });
+
+    render(<TaskList tasks={[makeTask()]} onUpdate={() => {}} onDelete={() => {}} />);
+    fireEvent.click(screen.getByRole('button', { name: /edit write release notes/i }));
+
+    const titleInput = screen.getByLabelText(/task title/i);
+    expect(titleInput).toHaveValue('Write release notes');
+    fireEvent.change(titleInput, { target: { value: 'Renamed note' } });
+    fireEvent.click(screen.getByRole('button', { name: /save changes/i }));
+
+    await waitFor(() =>
+      expect(tasksApi.updateTask).toHaveBeenCalledWith(
+        't1',
+        expect.objectContaining({ title: 'Renamed note' })
+      )
+    );
+  });
+
+  it('blocks empty titles in the edit dialog', async () => {
+    render(
+      <TaskEditDialog task={makeTask()} onClose={() => {}} onSaved={() => {}} />
+    );
+
+    fireEvent.change(screen.getByLabelText(/task title/i), { target: { value: '' } });
+    fireEvent.click(screen.getByRole('button', { name: /save changes/i }));
+
+    expect(await screen.findByText(/title cannot be empty/i)).toBeInTheDocument();
+    expect(tasksApi.updateTask).not.toHaveBeenCalled();
+  });
+
+  it('shares a task by email', async () => {
+    tasksApi.shareTask.mockResolvedValue({ sharedWith: [{ id: 'u2', email: 'team@example.com' }] });
+
+    render(
+      <TaskShareDialog task={makeTask()} onClose={() => {}} onShared={() => {}} />
+    );
+    fireEvent.change(screen.getByLabelText(/collaborator email/i), {
+      target: { value: 'team@example.com' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: /share task/i }));
+
+    await waitFor(() => expect(tasksApi.shareTask).toHaveBeenCalledWith('t1', 'team@example.com'));
   });
 
   it('removes a task after delete', async () => {
