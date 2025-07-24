@@ -111,6 +111,26 @@ def test_search_rejects_short_query():
     assert response.status_code == 422
 
 
+def test_day_plan_endpoint():
+    response = client.post(
+        "/api/v1/planner/day",
+        json={
+            "tasks": [
+                {"id": "1", "title": "Write tests", "priority": "high"},
+                {"id": "2", "title": "Reply to emails", "priority": "low"},
+            ],
+            "start_hour": 9,
+            "max_blocks": 2,
+        },
+    )
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["provider"] == "rules"
+    assert len(body["blocks"]) == 2
+    assert body["blocks"][0]["start"] == "09:00"
+
+
 def test_summarize_rejects_empty_text():
     response = client.post("/api/v1/notes/summarize", json={"text": "short"})
     assert response.status_code == 422
