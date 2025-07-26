@@ -25,4 +25,10 @@ router.use(requireAuth);
 router.post('/extract', validate({ body: extractBody }), asyncHandler(controller.extractTaskSuggestion));
 router.post('/chat', validate({ body: chatBody }), asyncHandler(controller.chatWithAssistant));
 
+const planBody = z.object({
+  start_hour: z.coerce.number().int().min(0).max(23).optional(),
+});
+
+router.post('/plan', validate({ body: planBody }), asyncHandler(controller.planMyDay));
+
 module.exports = router;

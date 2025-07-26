@@ -47,4 +47,16 @@ async function search(query, items, limit) {
   return postJson('/search', { query, items, limit });
 }
 
-module.exports = { postJson, extractTask, chat, summarize, search, AiServiceError };
+async function planDay(tasks, startHour) {
+  return postJson('/planner/day', { tasks, start_hour: startHour });
+}
+
+module.exports = {
+  postJson,
+  extractTask,
+  chat,
+  summarize,
+  search,
+  planDay,
+  AiServiceError,
+};
