@@ -1,25 +1,31 @@
 const request = require('supertest');
 
 const app = require('../app');
-const { connectTestDb, disconnectTestDb, authHeader } = require('../testing/db');
+const Task = require('../models/task.model');
+const { connectTestDb, clearTestDb, disconnectTestDb, authHeader } = require('../testing/db');
 const { registerUser } = require('../testing/fixtures');
 
 jest.mock('../services/aiGateway.service', () => ({
   extractTask: jest.fn(),
   chat: jest.fn(),
   summarize: jest.fn(),
+  planDay: jest.fn(),
 }));
 
-const { chat, extractTask } = require('../services/aiGateway.service');
+const { chat, extractTask, planDay } = require('../services/aiGateway.service');
 
 describe('assistant endpoints', () => {
   let auth;
 
   beforeAll(async () => {
     await connectTestDb();
+  });
+
+  beforeEach(async () => {
     auth = await registerUser();
   });
 
+  afterEach(clearTestDb);
   afterAll(disconnectTestDb);
 
   it('proxies chat messages with the users context', async () => {
@@ -67,6 +73,29 @@ describe('assistant endpoints', () => {
       .send({ message: '' });
 
     expect(res.status).toBe(400);
+  });
+
+  it('plans the day from open tasks', async () => {
+    await Task.create([
+      { userId: auth.user._id, title: 'Urgent fix', priority: 'high' },
+      { userId: auth.user._id, title: 'Done already', status: 'done' },
+    ]);
+    planDay.mockResolvedValue({
+      blocks: [{ title: 'Urgent fix', start: '09:00', end: '09:50', reason: 'due today' }],
+      focus_minutes: 50,
+      provider: 'rules',
+    });
+
+    const res = await request(app)
+      .post('/api/assistant/plan')
+      .set(authHeader(auth.token))
+      .send({ start_hour: 9 });
+
+    expect(res.status).toBe(200);
+    expect(res.body.plan.blocks[0].title).toBe('Urgent fix');
+    const [tasks, startHour] = planDay.mock.calls[0];
+    expect(startHour).toBe(9);
+    expect(tasks.map((task) => task.title)).toEqual(['Urgent fix']);
   });
 
   it('returns extraction suggestions', async () => {
