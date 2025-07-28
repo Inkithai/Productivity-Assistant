@@ -11,6 +11,7 @@ const router = express.Router();
 router.use(requireAuth);
 
 router.put('/me', validate({ body: profileUpdate }), asyncHandler(controller.updateProfile));
+router.get('/export', asyncHandler(controller.exportData));
 router.put(
   '/me/password',
   validate({ body: passwordChange }),

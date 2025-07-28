@@ -16,6 +16,26 @@ describe('users endpoints', () => {
     auth = await registerUser();
   });
 
+  it('exports the account data as an attachment', async () => {
+    await request(app)
+      .post('/api/tasks')
+      .set(authHeader(auth.token))
+      .send({ title: 'Exported task' });
+    await request(app)
+      .post('/api/notes')
+      .set(authHeader(auth.token))
+      .send({ title: 'Exported note', content: 'hello' });
+
+    const res = await request(app).get('/api/users/export').set(authHeader(auth.token));
+
+    expect(res.status).toBe(200);
+    expect(res.headers['content-disposition']).toContain('productivity-data.json');
+    expect(res.body.user.email).toBe(auth.email.toLowerCase());
+    expect(res.body.tasks.map((task) => task.title)).toContain('Exported task');
+    expect(res.body.notes.map((note) => note.title)).toContain('Exported note');
+    expect(res.body.events).toEqual([]);
+  });
+
   it('updates the display name', async () => {
     const res = await request(app)
       .put('/api/users/me')

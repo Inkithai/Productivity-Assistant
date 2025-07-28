@@ -1,3 +1,7 @@
+const Event = require('../models/event.model');
+const Note = require('../models/note.model');
+const Reminder = require('../models/reminder.model');
+const Task = require('../models/task.model');
 const User = require('../models/user.model');
 
 async function changePassword(req, res) {
@@ -27,3 +31,25 @@ async function updateProfile(req, res) {
 }
 
 module.exports = { updateProfile, changePassword };
+
+// everything the account owns, as one downloadable JSON document
+async function exportData(req, res) {
+  const [tasks, notes, events, reminders] = await Promise.all([
+    Task.find({ userId: req.user._id }).sort({ createdAt: -1 }),
+    Note.find({ userId: req.user._id }).sort({ updatedAt: -1 }),
+    Event.find({ userId: req.user._id }).sort({ start: 1 }),
+    Reminder.find({ userId: req.user._id }).sort({ remindAt: 1 }),
+  ]);
+
+  res.setHeader('Content-Disposition', 'attachment; filename="productivity-data.json"');
+  return res.json({
+    exportedAt: new Date().toISOString(),
+    user: { name: req.user.name, email: req.user.email },
+    tasks,
+    notes,
+    events,
+    reminders,
+  });
+}
+
+module.exports = { ...module.exports, exportData };

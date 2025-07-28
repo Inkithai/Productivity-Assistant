@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { updateProfile } from '../api/users.js';
+import { exportData, updateProfile } from '../api/users.js';
 import { useAuth } from '../context/AuthContext.jsx';
 import { useToast } from '../context/ToastContext.jsx';
 import PasswordForm from '../components/settings/PasswordForm.jsx';
@@ -68,6 +68,14 @@ export default function SettingsPage() {
           {busy ? 'Saving…' : 'Save profile'}
         </button>
       </form>
+
+      <div className="card settings-form">
+        <h2>Your data</h2>
+        <p className="muted">Download every task, note, event and reminder as JSON.</p>
+        <button type="button" className="btn-ghost" onClick={() => exportData()}>
+          Download my data
+        </button>
+      </div>
 
       <PasswordForm />
     </section>
