@@ -22,6 +22,7 @@ const taskListQuery = paginationQuery.extend({
   status: z.enum(TASK_STATUSES).optional(),
   priority: z.enum(TASK_PRIORITIES).optional(),
   tag: z.string().trim().min(1).optional(),
+  overdue: z.enum(['true']).optional(),
 });
 
 const shareBody = z.object({

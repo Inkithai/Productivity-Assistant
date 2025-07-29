@@ -9,13 +9,14 @@ export default function TasksPage() {
   const [tasks, setTasks] = useState([]);
   const [meta, setMeta] = useState(null);
   const [page, setPage] = useState(1);
+  const [overdueOnly, setOverdueOnly] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
-    listTasks({ page })
+    listTasks({ page, overdue: overdueOnly ? 'true' : undefined })
       .then((data) => {
         if (cancelled) return;
         setTasks(data.tasks);
@@ -27,7 +28,7 @@ export default function TasksPage() {
     return () => {
       cancelled = true;
     };
-  }, [page]);
+  }, [page, overdueOnly]);
 
   function handleUpdate(updated) {
     setTasks((prev) => prev.map((task) => (task._id === updated._id ? updated : task)));
@@ -44,6 +45,17 @@ export default function TasksPage() {
     <section>
       <header className="page-head">
         <h1>Tasks</h1>
+        <label className="filter-toggle">
+          <input
+            type="checkbox"
+            checked={overdueOnly}
+            onChange={(event) => {
+              setPage(1);
+              setOverdueOnly(event.target.checked);
+            }}
+          />
+          Overdue only
+        </label>
       </header>
       <SmartTaskInput onCreated={(task) => setTasks((prev) => [task, ...prev])} />
       <TaskForm onCreated={(task) => setTasks((prev) => [task, ...prev])} />

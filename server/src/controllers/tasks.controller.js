@@ -3,11 +3,18 @@ const User = require('../models/user.model');
 const { buildPagination, paginationMeta } = require('../utils/pagination');
 
 async function listTasks(req, res) {
-  const { status, priority, tag, page, limit } = req.validatedQuery;
+  const { status, priority, tag, overdue, page, limit } = req.validatedQuery;
   const filter = {
     // own tasks plus tasks other people shared with this account
     $or: [{ userId: req.user._id }, { sharedWith: req.user._id }],
   };
+
+  if (overdue === 'true') {
+    filter.dueDate = { $ne: null, $lt: new Date() };
+    if (!status) {
+      filter.status = { $ne: 'done' };
+    }
+  }
   if (status) filter.status = status;
   if (priority) filter.priority = priority;
   if (tag) filter.tags = tag;

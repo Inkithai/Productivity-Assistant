@@ -75,6 +75,31 @@ describe('tasks endpoints', () => {
     expect(res.body.tasks[0].status).toBe('done');
   });
 
+  it('filters to overdue tasks only', async () => {
+    await request(app)
+      .post('/api/tasks')
+      .set(authHeader(first.token))
+      .send({ title: 'Late', dueDate: '2020-01-01' });
+    await request(app)
+      .post('/api/tasks')
+      .set(authHeader(first.token))
+      .send({ title: 'Future', dueDate: '2035-01-01' });
+    const done = await request(app)
+      .post('/api/tasks')
+      .set(authHeader(first.token))
+      .send({ title: 'Cleared', dueDate: '2020-01-01' });
+    await request(app)
+      .put(`/api/tasks/${done.body.task._id}`)
+      .set(authHeader(first.token))
+      .send({ status: 'done' });
+
+    const res = await request(app)
+      .get('/api/tasks?overdue=true')
+      .set(authHeader(first.token));
+
+    expect(res.body.tasks.map((task) => task.title)).toEqual(['Late']);
+  });
+
   it('lists dated tasks before undated ones', async () => {
     await request(app)
       .post('/api/tasks')
