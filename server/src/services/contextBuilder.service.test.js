@@ -49,9 +49,21 @@ describe('assistant context builder', () => {
   });
 
   it('includes recent note titles', async () => {
-    await Note.create([
-      { userId: user._id, title: 'Newest note', updatedAt: new Date('2024-06-15T09:00:00') },
-      { userId: user._id, title: 'Older note', updatedAt: new Date('2024-06-01T09:00:00') },
+    // insert at the driver level: the timestamps plugin overwrites an
+    // explicit updatedAt on create, which made this test order-flaky
+    await Note.collection.insertMany([
+      {
+        userId: user._id,
+        title: 'Newest note',
+        createdAt: new Date('2024-06-01T09:00:00'),
+        updatedAt: new Date('2024-06-15T09:00:00'),
+      },
+      {
+        userId: user._id,
+        title: 'Older note',
+        createdAt: new Date('2024-05-01T09:00:00'),
+        updatedAt: new Date('2024-06-01T09:00:00'),
+      },
     ]);
 
     const context = await buildContext(user._id, NOW);

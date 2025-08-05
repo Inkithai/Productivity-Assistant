@@ -75,8 +75,13 @@ describe('focus endpoints', () => {
     expect(res.status).toBe(200);
     expect(res.body.summary.days).toHaveLength(7);
     expect(res.body.summary.totalMinutes).toBe(51);
-    expect(res.body.summary.days[6]).toMatchObject({ minutes: 51, sessions: 2 });
-    expect(res.body.summary.days[0].minutes).toBe(0);
+
+    // both sessions fall on the same calendar day; just after midnight that
+    // can be the second-to-last bucket rather than the last one
+    const filled = res.body.summary.days.filter((day) => day.sessions > 0);
+    expect(filled).toHaveLength(1);
+    expect(filled[0]).toMatchObject({ minutes: 51, sessions: 2 });
+    expect(res.body.summary.days.filter((day) => day.sessions === 0)).toHaveLength(6);
   });
 
   it('ignores sessions from other users', async () => {

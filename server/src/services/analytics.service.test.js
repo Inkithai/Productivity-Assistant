@@ -64,9 +64,14 @@ describe('analytics summary', () => {
     const summary = await buildSummary(user._id, now);
 
     expect(summary.week).toHaveLength(7);
-    const todayBucket = summary.week[6];
-    expect(todayBucket.completed).toBe(1);
-    expect(summary.week.slice(0, 6).every((day) => day.completed === 0)).toBe(true);
+    // the completion lands in whichever bucket contains it; "now minus two
+    // hours" can be yesterday when this runs just after midnight
+    const totalCompleted = summary.week.reduce((sum, day) => sum + day.completed, 0);
+    expect(totalCompleted).toBe(1);
+    const filled = summary.week.filter((day) => day.completed === 1);
+    expect(filled).toHaveLength(1);
+    const bucketStart = filled[0] === summary.week[6] ? new Date(now).setHours(0, 0, 0, 0) : null;
+    expect(completedAt >= (bucketStart ?? completedAt)).toBe(true);
   });
 
   it('builds six months of completion trends', async () => {
