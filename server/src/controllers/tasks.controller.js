@@ -1,5 +1,7 @@
+const Notification = require('../models/notification.model');
 const Task = require('../models/task.model');
 const User = require('../models/user.model');
+const { emitToUser } = require('../sockets');
 const { buildPagination, paginationMeta } = require('../utils/pagination');
 
 async function listTasks(req, res) {
@@ -115,6 +117,18 @@ async function shareTask(req, res) {
   if (!already) {
     task.sharedWith.push(collaborator._id);
     await task.save();
+
+    await Notification.create({
+      userId: collaborator._id,
+      type: 'system',
+      title: 'Task shared with you',
+      body: `${req.user.name} shared "${task.title}" with you`,
+      meta: { taskId: String(task._id) },
+    });
+    emitToUser(collaborator._id, 'notification:new', {
+      title: 'Task shared with you',
+      body: `${req.user.name} shared "${task.title}" with you`,
+    });
   }
 
   return res.json({

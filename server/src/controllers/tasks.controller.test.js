@@ -258,6 +258,26 @@ describe('tasks endpoints', () => {
     expect(again.body.alreadyShared).toBe(true);
   });
 
+  it('notifies the collaborator once they are shared with', async () => {
+    const create = await request(app)
+      .post('/api/tasks')
+      .set(authHeader(first.token))
+      .send({ title: 'Notify me' });
+    await request(app)
+      .post(`/api/tasks/${create.body.task._id}/share`)
+      .set(authHeader(first.token))
+      .send({ email: second.email });
+
+    const res = await request(app)
+      .get('/api/notifications')
+      .set(authHeader(second.token));
+
+    const share = res.body.notifications.find((n) => n.title === 'Task shared with you');
+    expect(share).toBeDefined();
+    expect(share.body).toContain('Notify me');
+    expect(share.meta.taskId).toBe(create.body.task._id);
+  });
+
   it('rejects sharing with unknown emails', async () => {
     const create = await request(app)
       .post('/api/tasks')
