@@ -17,7 +17,8 @@ export default function ReminderItem({ reminder, onChanged }) {
 
   async function handleCancel() {
     await cancelReminder(reminder._id);
-    onChanged(null);
+    // pass the cancelled state through so the page can re-file it
+    onChanged({ ...reminder, status: 'cancelled' });
   }
 
   return (
