@@ -1,6 +1,6 @@
 {
   "name": "productivity-assistant-server",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "description": "REST API for the productivity assistant",
   "main": "src/server.js",
